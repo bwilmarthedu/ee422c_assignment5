@@ -48,7 +48,14 @@ public abstract class Critter {
     }
 
     protected final String look(int direction, boolean steps) {
-        return "";
+        String s = null;
+        this.energy -= Params.look_energy_cost;
+        //todo
+        //if occupied
+        //return occupying Critter . toString
+        //if unoccupied
+        return null;
+        //todo later: handle look during doTimeStep vs. look during run
     }
 
     /* rest is unchanged from Project 4 */
@@ -320,32 +327,36 @@ public abstract class Critter {
         }
         return result;
     }
-    //todo -- this implementation is incorrect -- use Kassi's
 
     /**
      * Prints out how many Critters of each type there are on the board.
      *
      * @param critters List of Critters.
      */
-    public static void runStats(List<Critter> critters) {
-        System.out.print("" + critters.size() + " critters as follows -- ");
-        java.util.Map<String, Integer> critter_count = new java.util.HashMap<String, Integer>();
-        for (Critter crit : critters) {
-            String crit_string = crit.toString();
-            Integer old_count = critter_count.get(crit_string);
-            if (old_count == null) {
-                critter_count.put(crit_string, 1);
-            } else {
-                critter_count.put(crit_string, old_count.intValue() + 1);
-            }
-        }
-        String prefix = "";
-        for (String s : critter_count.keySet()) {
-            System.out.print(prefix + s + ":" + critter_count.get(s));
-            prefix = ", ";
-        }
-        System.out.println();
+    //todo "For this assignment, runStats returns a String, and is not a void method."
+    public static String runStats(List<Critter> critters) {
+        return "";
     }
+
+//    public static void runStats(List<Critter> critters) {
+//        System.out.print("" + critters.size() + " critters as follows -- ");
+//        java.util.Map<String, Integer> critter_count = new java.util.HashMap<String, Integer>();
+//        for (Critter crit : critters) {
+//            String crit_string = crit.toString();
+//            Integer old_count = critter_count.get(crit_string);
+//            if (old_count == null) {
+//                critter_count.put(crit_string, 1);
+//            } else {
+//                critter_count.put(crit_string, old_count.intValue() + 1);
+//            }
+//        }
+//        String prefix = "";
+//        for (String s : critter_count.keySet()) {
+//            System.out.print(prefix + s + ":" + critter_count.get(s));
+//            prefix = ", ";
+//        }
+//        System.out.println();
+//    }
 
     /* the TestCritter class allows some critters to "cheat". If you want to
      * create tests of your Critter model, you can create subclasses of this class
