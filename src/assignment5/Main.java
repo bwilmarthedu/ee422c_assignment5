@@ -4,12 +4,16 @@ import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+
 
 
 
@@ -23,13 +27,9 @@ import javafx.stage.Stage;
  * Main class
  */
 public class Main extends Application implements EventHandler {
-    int WIDTH = 1000;
-    int HEIGHT = 1000;
-    Stage mainWindow;
-    Button runTimeSteps;
-    Button make;
-    Button animate;
-    Button seed;
+    private final int WIDTH = 1000;
+    private final int HEIGHT = 1000;
+    private Button make, runTimeSteps, animate, seed;
     //todo scene for runStats
 
     public static void main(String[] args) {
@@ -39,31 +39,68 @@ public class Main extends Application implements EventHandler {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
-        mainWindow = stage;
-        setSize(WIDTH, HEIGHT);
-        mainWindow.setTitle("Critters Part Two, Electric Boogaloo");
+    public void start(Stage stage) {
+        stage.setTitle("Critters Part Two");
+
         BorderPane border = new BorderPane();
-        FlowPane buttons = new FlowPane();
-        for (int i = 0; i < 4; i++) {
-            buttons.getChildren().add(makeButtons()[i]);
-        }
-        buttons.setPadding(new Insets(5, 5, 5, 5));
-        buttons.setVgap(10);
-        buttons.setHgap(10);
-//        border.setRight(buttons);
-        Scene scene = new Scene(buttons, WIDTH, HEIGHT);
-        mainWindow.setScene(scene);
-        mainWindow.show();
+        AnchorPane critterWorld = new AnchorPane();
+        AnchorPane statsBox = new AnchorPane();
+        TabPane tabPane = new TabPane();
+        setSize(stage, WIDTH, HEIGHT);
 
-        runTimeSteps.setOnAction((event)-> System.out.println("DEBUG: runTimeSteps"));
-        make.setOnAction((event)-> System.out.println("DEBUG: make"));
-        animate.setOnAction((event)-> System.out.println("DEBUG: animate"));
-        seed.setOnAction((event)-> System.out.println("DEBUG: seed"));
+        Group root = new Group();
+        Scene scene = new Scene(root, 400, 250);
 
+        tabPane = setTabs(tabPane);
+        Critter.displayWorld(critterWorld);
+
+        border.setRight(tabPane);
+        border.setCenter(critterWorld);
+        border.setBottom(statsBox);
+        // bind to take available space
+        root.getChildren().add(border);
+        stage.setScene(scene);
+        stage.show();
     }
 
-    public void setSize(int w, int h) {
+    private TabPane setTabs( TabPane tabPane){
+
+        String[] tabnames = new String[]{ "Make", "Run", "Animate", "Seed"};
+        for (int i = 0; i < 4; i++) {
+            Tab tab = new Tab();
+            tab.setText(tabnames[i]);
+            Label tabName = new Label(tabnames[i]);
+            HBox hbox = new HBox();
+            hbox.getChildren().add(tabName);
+            hbox.setAlignment(Pos.CENTER);
+            tab.setContent(hbox);
+            tabPane.getTabs().add(tab);
+        } return tabPane;
+    }
+    public VBox addVbox() {
+        VBox vert = new VBox();
+        vert.setPadding(new Insets(10));
+        vert.setSpacing(8);
+
+        Text title = new Text("Options");
+        vert.getChildren().add(title);
+
+        Hyperlink options[] = new Hyperlink[]{
+                new Hyperlink("Make"),
+                new Hyperlink("Run"),
+                new Hyperlink("Animate"),
+                new Hyperlink("Set Seed")
+        };
+
+
+        for (int i = 0; i < 4; i++) {
+            vert.setMargin(options[i], new Insets(0, 0, 0, 8));
+            vert.getChildren().add(options[i]);
+        }
+        return vert;
+    }
+
+    public void setSize(Stage mainWindow, int w, int h) {
         mainWindow.setMaxHeight(h);
         mainWindow.setMaxWidth(w);
         mainWindow.setMinHeight(h);
@@ -85,7 +122,10 @@ public class Main extends Application implements EventHandler {
 
     @Override
     public void handle(Event event) {
-
+        runTimeSteps.setOnAction((ButtonEvent) -> System.out.println("DEBUG: runTimeSteps"));
+//        make.setOnAction((event)-> System.out.println("DEBUG: make"));
+//        animate.setOnAction((event)-> System.out.println("DEBUG: animate"));
+//        seed.setOnAction((event)-> System.out.println("DEBUG: seed"));
     }
 
 }
