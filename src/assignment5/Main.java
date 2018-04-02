@@ -4,7 +4,9 @@ import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.print.PrinterJob;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -12,6 +14,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import static assignment5.Critter.getInstances;
+
 
 
 
@@ -32,10 +37,12 @@ public class Main extends Application implements EventHandler {
     private Button make, runTimeSteps, animate, seed;
     //todo scene for runStats
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvalidCritterException {
+
+        for (int k = 0; k < 25; k++) {
+            Critter.makeCritter("Algae");
+        }
         launch(args);
-
-
     }
 
     @Override
@@ -44,39 +51,97 @@ public class Main extends Application implements EventHandler {
 
         BorderPane border = new BorderPane();
         AnchorPane critterWorld = new AnchorPane();
-        AnchorPane statsBox = new AnchorPane();
+        TextArea stats = new TextArea();
+
         TabPane tabPane = new TabPane();
         setSize(stage, WIDTH, HEIGHT);
 
         Group root = new Group();
-        Scene scene = new Scene(root, 400, 250);
+        Scene scene = new Scene(root, WIDTH, HEIGHT);
 
         tabPane = setTabs(tabPane);
+
+        critterWorld.setPrefSize(750, 750); //todo: math to resize.
+        critterWorld.setPadding(new Insets(50));
         Critter.displayWorld(critterWorld);
+
+//        Button printTextBtn = new Button("Show Stats");
+//        printTextBtn.setOnAction(e -> stats.setText("TODO STATS HERE"));
+        stats.setText("TODO STATS HERE");
+        try {
+            stats.setText(Critter.runStats(getInstances("Algae")));
+        } catch (InvalidCritterException e) {
+            e.printStackTrace();
+        }
+
+        stats.setDisable(true);
+        stats.setMaxHeight(100);
+
+//        tabPane.setPrefWidth(333);
+
 
         border.setRight(tabPane);
         border.setCenter(critterWorld);
-        border.setBottom(statsBox);
+        border.setBottom(stats);
+//        border.setBottom(printTextBtn);
         // bind to take available space
         root.getChildren().add(border);
         stage.setScene(scene);
         stage.show();
     }
 
-    private TabPane setTabs( TabPane tabPane){
 
-        String[] tabnames = new String[]{ "Make", "Run", "Animate", "Seed"};
-        for (int i = 0; i < 4; i++) {
-            Tab tab = new Tab();
-            tab.setText(tabnames[i]);
-            Label tabName = new Label(tabnames[i]);
-            HBox hbox = new HBox();
-            hbox.getChildren().add(tabName);
-            hbox.setAlignment(Pos.CENTER);
-            tab.setContent(hbox);
-            tabPane.getTabs().add(tab);
-        } return tabPane;
+    private TabPane setTabs(TabPane tabPane) {
+        Tab makeTab = new Tab();
+        Tab runTab = new Tab();
+        Tab animateTab = new Tab();
+        Tab seedTab = new Tab();
+        makeTab.setText("Make");
+        runTab.setText("Run");
+        animateTab.setText("Animate");
+        seedTab.setText("Seed");
+//        tabPane.getTabs().add()
+        HBox hbox = new HBox();
+//  todo      hbox.getChildren().add(tabName);
+        hbox.setAlignment(Pos.CENTER);
+        makeTab.setContent(hbox);
+        tabPane.getTabs().add(buildMakeTab(makeTab));
+        tabPane.getTabs().add(buildAnimateTab(animateTab));
+        tabPane.getTabs().add(buildRunTab(runTab));
+        tabPane.getTabs().add(buildSeedTab(seedTab));
+
+        return tabPane;
     }
+
+    private Tab buildMakeTab(Tab makeTab) {
+        FlowPane fp = new FlowPane(Orientation.VERTICAL);
+        fp.setPrefWrapLength(150);
+        fp.setPadding(new Insets(10));
+        fp.setVgap(25);
+        Text t = new Text("Select a Critter");
+        ComboBox critterOptions = new ComboBox();
+        critterOptions.getItems().addAll("Craig", "Algae", "Algaephobic", "Critter1", "Critter2", "Critter3", "Critter4");
+        critterOptions.setEditable(false);
+        String value = (String) critterOptions.getValue();
+        TextField numOf = new TextField("Amount");
+
+        fp.getChildren().addAll(t, critterOptions, numOf);
+        makeTab.setContent(fp);
+        return makeTab;
+    }
+
+    private Tab buildRunTab(Tab runTab) {
+        return runTab;
+    }
+
+    private Tab buildAnimateTab(Tab animateTab) {
+        return animateTab;
+    }
+
+    private Tab buildSeedTab(Tab seedTab) {
+        return seedTab;
+    }
+
     public VBox addVbox() {
         VBox vert = new VBox();
         vert.setPadding(new Insets(10));
@@ -128,4 +193,19 @@ public class Main extends Application implements EventHandler {
 //        seed.setOnAction((event)-> System.out.println("DEBUG: seed"));
     }
 
+    private void print(Node node) {
+        PrinterJob job = PrinterJob.createPrinterJob();
+        if (job != null) {
+            System.out.println(job.jobStatusProperty().asString());
+            System.out.println("cool");
+            boolean printed = job.printPage(node);
+            if (printed) {
+                job.endJob();
+            } else {
+                System.out.println("Printing failed.");
+            }
+        } else {
+            System.out.println("Could not create a printer job.");
+        }
+    }
 }
