@@ -1,5 +1,10 @@
 package assignment5;
 
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -269,7 +274,71 @@ public abstract class Critter {
     }
 
     public static void displayWorld(Object pane) {
-        //todo
+        Critter[][] newWorld = placeCritters();
+        for (int i = 0; i < Params.world_height; i++) {
+            for (int j = 0; j < Params.world_width; j++) {
+//                System.out.print(newWorld[j][i]);
+                Critter crit = newWorld[j][i];
+                AnchorPane pn = (AnchorPane) pane;
+                if (crit != null) {
+                    switch (crit.viewShape()) {
+                        case CIRCLE:
+                            Circle circ = new Circle();
+                            circ.setFill(crit.viewColor());
+                            circ.setStroke(crit.viewOutlineColor());
+                            circ.setRadius(1);
+                            circ.setCenterX(crit.x_coord);
+                            circ.setCenterY(crit.y_coord);
+                            pn.getChildren().add(circ);
+
+                            break;
+                        case SQUARE:
+                            Rectangle squ = new Rectangle();
+                            squ.setFill(crit.viewColor());
+                            squ.setStroke(crit.viewOutlineColor());
+                            squ.setWidth(1);
+                            squ.setHeight(1);
+                            squ.setX(crit.x_coord);
+                            squ.setY(crit.y_coord);
+                            pn.getChildren().add(squ);
+                            break;
+                        case DIAMOND:
+                            Polygon dia = new Polygon();
+                            dia.setFill(crit.viewColor());
+                            dia.setStroke(crit.viewOutlineColor());
+                            dia.getPoints().addAll(crit.x_coord - 0.5, crit.y_coord - 0.0, crit.x_coord - 0.0, crit.y_coord - 0.5, crit.x_coord + 0.5, crit.y_coord - 0.0, crit.x_coord - 0.0, crit.y_coord + 0.5);
+                            pn.getChildren().add(dia);
+                            break;
+
+                        case TRIANGLE:
+                            Polygon tri = new Polygon();
+                            tri.setFill(crit.viewColor());
+                            tri.setStroke(crit.viewOutlineColor());
+                            tri.getPoints().addAll(crit.x_coord - 0.5, crit.y_coord - 0.5, crit.x_coord - 0.0, crit.y_coord + 0.5, crit.x_coord + 0.5, crit.y_coord + 0.5);
+                            pn.getChildren().add(tri);
+                            break;
+                        case STAR:
+                            //todo
+                            break;
+                    }
+//                pn.getChildren().add(newWorld[j][i]);
+                }
+            }
+
+        }
+    }
+
+    private static Critter[][] placeCritters() {
+        Critter[][] critterWorld = new Critter[Params.world_width][Params.world_height];
+        for (int x = 0; x < Params.world_width; x++) {
+            for (int y = 0; y < Params.world_height; y++) {
+                critterWorld[x][y] = null;
+            }
+        }
+        for (Critter c : population) {
+            critterWorld[c.x_coord][c.y_coord] = c;
+        }
+        return critterWorld;
     }
     /* Alternate displayWorld, where you use Main.<pane> to reach into your
        display component.

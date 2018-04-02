@@ -1,0 +1,8 @@
+ @font-face{
+ font-family: myFamily;
+ src: url(https://fonts.googleapis.com/css?family=Alegreya Sans SC)}
+
+
+.root{
+    -fx-font-family: "Alegraya";
+}
