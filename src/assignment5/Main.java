@@ -1,6 +1,7 @@
 package assignment5;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -10,6 +11,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
+import java.awt.event.MouseEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 
@@ -81,6 +86,59 @@ public class Main extends Application implements EventHandler {
         seed.setLayoutY(400);
         Button[] array = {runTimeSteps, make, animate, seed};
         return array;
+    }
+
+
+    public void makeEventHandlers() {
+        runTimeSteps.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                try{
+                    Integer numSteps = new Integer(1);  // TODO Get numSteps from slider or textbox
+                    for(int i = 0; i < numSteps; i++) {
+                        Critter.worldTimeStep();
+                    }
+                }
+                catch(Exception e){
+                    // Print error in textbox
+                }
+            }
+        });
+        make.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                // Critter.makeCritter(); // TODO Get input from dropdown textbox
+            }
+        });
+        animate.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                // Black out all unnecessary inputs
+                Timer timer = new Timer();
+                TimerTask doStep = new TimerTask() {
+                    @Override
+                    public void run() {
+                        Integer numSteps = new Integer(1);  // Get numSteps from slider or textbox
+                        for(int i = 0; i < numSteps; i++) {
+                            Critter.worldTimeStep();
+                        }
+                    }
+                };
+                timer.scheduleAtFixedRate(doStep, 100, 1000);
+            }
+        });
+        seed.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    //Critter.setSeed(Integer.parseInt()); // TODO Take input from textbox
+                }
+                catch(Exception e){
+                    // Print error in textbox
+                }
+            }
+        });
     }
 
     @Override
