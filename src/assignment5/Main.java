@@ -41,37 +41,22 @@ public class Main extends Application implements EventHandler {
     private final int WIDTH = 1000;
     private final int HEIGHT = 1000;
     private Button make, runTimeSteps, animate, seed;
-<<<<<<< HEAD
     static AnchorPane critterWorld = new AnchorPane();
     TextArea stats = new TextArea();
-=======
-    AnchorPane critterWorld = new AnchorPane();
-    TextArea stats = new TextArea();
-    //todo scene for runStats
->>>>>>> gui
+
 
     public static void main(String[] args) throws InvalidCritterException {
         for (int k = 0; k < 25; k++) {
             Critter.makeCritter("Algae");
         }
-
-        Critter.displayWorld(critterWorld);
         launch(args);
-        for (int l = 0; l < 100; l ++){
-            Critter.worldTimeStep();
-            Critter.displayWorld(critterWorld);
 
-        }
     }
 
     @Override
     public void start(Stage stage) {
         stage.setTitle("Critters Part Two");
         BorderPane border = new BorderPane();
-<<<<<<< HEAD
-
-=======
->>>>>>> gui
         TabPane tabPane = new TabPane();
         setSize(stage, WIDTH, HEIGHT);
         Group root = new Group();
@@ -132,19 +117,15 @@ public class Main extends Application implements EventHandler {
         ComboBox critterOptions = new ComboBox();
         critterOptions.getItems().addAll("Craig", "Algae", "Algaephobic", "Critter1", "Critter2", "Critter3", "Critter4"); // Todo populate using reflection?
         critterOptions.setEditable(false);
-<<<<<<< HEAD
-        String value = (String) critterOptions.getValue();
+
+//        String value = (String) critterOptions.getValue();
         TextField numOf = new TextField();
         numOf.setPromptText("Amount");
-        fp.getChildren().addAll(t, critterOptions, numOf);
-=======
-        //String value = (String) critterOptions.getValue();
-        TextField numOf = new TextField("Amount");
+
         Button b = new Button("Make");
         fp.getChildren().addAll(t, critterOptions, numOf, b);
->>>>>>> gui
         makeTab.setContent(fp);
-        //
+
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
