@@ -2,6 +2,7 @@ package assignment5;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -46,8 +47,9 @@ public class Main extends Application implements EventHandler {
 
 
     public static void main(String[] args) throws InvalidCritterException {
-        for (int k = 0; k < 25; k++) {
+        for (int k = 0; k < 1; k++) {
             Critter.makeCritter("Algae");
+            Critter.makeCritter("Craig");
         }
         launch(args);
 
@@ -132,13 +134,12 @@ public class Main extends Application implements EventHandler {
                 try {
                     InputValues.makeWhichCritter = (String) critterOptions.getValue();
                     InputValues.amtOfCritters = Integer.parseInt(numOf.getText());
-                    for(int i = 0; i < InputValues.amtOfCritters; i++) {
+                    for (int i = 0; i < InputValues.amtOfCritters; i++) {
                         Critter.makeCritter(InputValues.makeWhichCritter);
                     }
                     Critter.displayWorld(critterWorld);
-                }
-                catch(Exception e){
-                    critterOptions.setValue("invalid input");
+                } catch (Exception e) {
+                    numOf.setPromptText("invalid input");
                 }
             }
         });
@@ -161,15 +162,14 @@ public class Main extends Application implements EventHandler {
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                try{
+                try {
                     InputValues.runTimeStep = new Integer(Integer.parseInt(numOf.getText()));
-                    for(int i = 0; i < InputValues.runTimeStep; i++) {
+                    for (int i = 0; i < InputValues.runTimeStep; i++) {
                         Critter.worldTimeStep();
                     }
                     Critter.displayWorld(critterWorld);
-                }
-                catch(Exception e){
-                    numOf.setText("invalid input");
+                } catch (Exception e) {
+                    numOf.setPromptText("invalid input");
                 }
             }
         });
@@ -195,9 +195,12 @@ public class Main extends Application implements EventHandler {
         KeyFrame timeStep = new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                for(int i = 0; i < InputValues.animateTimeStep; i++){
-                    Critter.worldTimeStep();
+                for (int i = 0; i < InputValues.animateTimeStep; i++) {
+                    PauseTransition pauseTransition = new PauseTransition(Duration.seconds(i));
+                    pauseTransition.setOnFinished(e -> Critter.worldTimeStep());
+                    pauseTransition.play();
                 }
+                critterWorld.getChildren().clear();
                 Critter.displayWorld(critterWorld);
             }
         });
@@ -241,9 +244,8 @@ public class Main extends Application implements EventHandler {
                 try {
                     InputValues.seedNumber = Integer.parseInt(seed.getText());
                     Critter.setSeed(InputValues.seedNumber);
-                }
-                catch(Exception e){
-                    seed.setText("invalid input");
+                } catch (Exception e) {
+                    seed.setPromptText("invalid input");
                 }
             }
         });
