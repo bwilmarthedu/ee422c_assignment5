@@ -35,25 +35,33 @@ public class Main extends Application implements EventHandler {
     private final int WIDTH = 1000;
     private final int HEIGHT = 1000;
     private Button make, runTimeSteps, animate, seed;
-    //todo scene for runStats
+    static AnchorPane critterWorld = new AnchorPane();
+    TextArea stats = new TextArea();
 
     public static void main(String[] args) throws InvalidCritterException {
         for (int k = 0; k < 25; k++) {
             Critter.makeCritter("Algae");
         }
+
+        Critter.displayWorld(critterWorld);
         launch(args);
+        for (int l = 0; l < 100; l ++){
+            Critter.worldTimeStep();
+            Critter.displayWorld(critterWorld);
+
+        }
     }
 
     @Override
     public void start(Stage stage) {
         stage.setTitle("Critters Part Two");
         BorderPane border = new BorderPane();
-        AnchorPane critterWorld = new AnchorPane();
-        TextArea stats = new TextArea();
+
         TabPane tabPane = new TabPane();
         setSize(stage, WIDTH, HEIGHT);
         Group root = new Group();
         Scene scene = new Scene(root, WIDTH, HEIGHT);
+        scene.getStylesheets().add("assignment5/gui.css");
         tabPane = setTabs(tabPane);
         critterWorld.setPrefSize(750, 750); //todo: math to resize.
         critterWorld.setPadding(new Insets(50));
@@ -110,7 +118,8 @@ public class Main extends Application implements EventHandler {
         critterOptions.getItems().addAll("Craig", "Algae", "Algaephobic", "Critter1", "Critter2", "Critter3", "Critter4");
         critterOptions.setEditable(false);
         String value = (String) critterOptions.getValue();
-        TextField numOf = new TextField("Amount");
+        TextField numOf = new TextField();
+        numOf.setPromptText("Amount");
         fp.getChildren().addAll(t, critterOptions, numOf);
         makeTab.setContent(fp);
         return makeTab;
@@ -121,7 +130,8 @@ public class Main extends Application implements EventHandler {
         fp.setPrefWrapLength(150);
         fp.setPadding(new Insets(10));
         fp.setVgap(25);
-        TextField numOf = new TextField("Number of steps to run");
+        TextField numOf = new TextField();
+        numOf.setPromptText("Number of steps to run");
         Button b = new Button("Run");
         Button b2 = new Button("Stop");
         fp.getChildren().addAll(numOf, b, b2);
@@ -149,7 +159,8 @@ public class Main extends Application implements EventHandler {
         fp.setPrefWrapLength(150);
         fp.setPadding(new Insets(10));
         fp.setVgap(25);
-        TextField seed = new TextField("Seed number");
+        TextField seed = new TextField();
+        seed.setPromptText("Seed number");
         Button b = new Button("Set");
         fp.getChildren().addAll(seed, b);
         seedTab.setContent(fp);
