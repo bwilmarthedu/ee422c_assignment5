@@ -182,40 +182,8 @@ public class Main extends Application implements EventHandler {
         mainWindow.setMinWidth(w);
     }
 
-    public Button[] makeButtons() {
-        runTimeSteps = new Button("Run");
-        runTimeSteps.setLayoutY(100);
-        make = new Button("Make Critters");
-        make.setLayoutY(200);
-        animate = new Button("Animate World");
-        animate.setLayoutY(300);
-        seed = new Button("Set Seed");
-        seed.setLayoutY(400);
-        Button[] array = {runTimeSteps, make, animate, seed};
-        return array;
-    }
-
     @Override
     public void handle(Event event) {
-        runTimeSteps.setOnAction((ButtonEvent) -> System.out.println("DEBUG: runTimeSteps"));
-        //        make.setOnAction((event)-> System.out.println("DEBUG: make"));
-        //        animate.setOnAction((event)-> System.out.println("DEBUG: animate"));
-        //        seed.setOnAction((event)-> System.out.println("DEBUG: seed"));
-    }
-
-    private void print(Node node) {
-        PrinterJob job = PrinterJob.createPrinterJob();
-        if (job != null) {
-            System.out.println(job.jobStatusProperty().asString());
-            System.out.println("cool");
-            boolean printed = job.printPage(node);
-            if (printed) {
-                job.endJob();
-            } else {
-                System.out.println("Printing failed.");
-            }
-        } else {
-            System.out.println("Could not create a printer job.");
-        }
+        //todo handlers
     }
 }
