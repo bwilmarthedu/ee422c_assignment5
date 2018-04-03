@@ -116,7 +116,7 @@ public class Main extends Application implements EventHandler {
         critterOptions.setEditable(false);
         String value = (String) critterOptions.getValue();
         TextField numOf = new TextField("Amount");
-        fp.getChildren().addAll(t, critterOptions, numOf, make);
+        fp.getChildren().addAll(t, critterOptions, numOf);
         makeTab.setContent(fp);
         return makeTab;
     }
@@ -203,12 +203,14 @@ public class Main extends Application implements EventHandler {
                 }
             }
         });
+
         make.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //Critter.makeCritter(critterOptions.); // TODO Get input from dropdown textbox
+                //Critter.makeCritter(critterOptions.); // TODO Get input from dropdown text box
             }
         });
+
         animate.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -217,7 +219,7 @@ public class Main extends Application implements EventHandler {
                 TimerTask doStep = new TimerTask() {
                     @Override
                     public void run() {
-                        Integer numSteps = new Integer(1);  // Get numSteps from slider or textbox
+                        Integer numSteps = new Integer(1);  // Todo Get numSteps from slider or text box
                         for(int i = 0; i < numSteps; i++) {
                             Critter.worldTimeStep();
                         }
@@ -226,11 +228,12 @@ public class Main extends Application implements EventHandler {
                 timer.scheduleAtFixedRate(doStep, 100, 1000);
             }
         });
+
         seed.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    //Critter.setSeed(Integer.parseInt()); // TODO Take input from textbox
+                    //Critter.setSeed(Integer.parseInt()); // TODO Take input from text box
                 }
                 catch(Exception e){
                     // Print error in textbox
