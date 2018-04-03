@@ -1,5 +1,7 @@
 package assignment5;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -15,16 +17,15 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 import java.awt.event.MouseEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static assignment5.Critter.displayWorld;
 import static assignment5.Critter.getInstances;
-
-
-
-
 
 
 /*
@@ -40,6 +41,8 @@ public class Main extends Application implements EventHandler {
     private final int WIDTH = 1000;
     private final int HEIGHT = 1000;
     private Button make, runTimeSteps, animate, seed;
+    AnchorPane critterWorld = new AnchorPane();
+    TextArea stats = new TextArea();
     //todo scene for runStats
 
     public static void main(String[] args) throws InvalidCritterException {
@@ -53,8 +56,6 @@ public class Main extends Application implements EventHandler {
     public void start(Stage stage) {
         stage.setTitle("Critters Part Two");
         BorderPane border = new BorderPane();
-        AnchorPane critterWorld = new AnchorPane();
-        TextArea stats = new TextArea();
         TabPane tabPane = new TabPane();
         setSize(stage, WIDTH, HEIGHT);
         Group root = new Group();
@@ -112,12 +113,31 @@ public class Main extends Application implements EventHandler {
         fp.setVgap(25);
         Text t = new Text("Select a Critter");
         ComboBox critterOptions = new ComboBox();
-        critterOptions.getItems().addAll("Craig", "Algae", "Algaephobic", "Critter1", "Critter2", "Critter3", "Critter4");
+        critterOptions.getItems().addAll("Craig", "Algae", "Algaephobic", "Critter1", "Critter2", "Critter3", "Critter4"); // Todo populate using reflection?
         critterOptions.setEditable(false);
-        String value = (String) critterOptions.getValue();
+        //String value = (String) critterOptions.getValue();
         TextField numOf = new TextField("Amount");
-        fp.getChildren().addAll(t, critterOptions, numOf);
+        Button b = new Button("Make");
+        fp.getChildren().addAll(t, critterOptions, numOf, b);
         makeTab.setContent(fp);
+        //
+        b.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    InputValues.makeWhichCritter = (String) critterOptions.getValue();
+                    InputValues.amtOfCritters = Integer.parseInt(numOf.getText());
+                    for(int i = 0; i < InputValues.amtOfCritters; i++) {
+                        Critter.makeCritter(InputValues.makeWhichCritter);
+                    }
+                    Critter.displayWorld(critterWorld);
+                }
+                catch(Exception e){
+                    critterOptions.setValue("invalid input");
+                }
+            }
+        });
+        //
         return makeTab;
     }
 
@@ -128,9 +148,25 @@ public class Main extends Application implements EventHandler {
         fp.setVgap(25);
         TextField numOf = new TextField("Number of steps to run");
         Button b = new Button("Run");
-        Button b2 = new Button("Stop");
-        fp.getChildren().addAll(numOf, b, b2);
+        //Button b2 = new Button("Stop"); // todo, Do we need this here?
+        fp.getChildren().addAll(numOf, b);
         runTab.setContent(fp);
+        //
+        b.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try{
+                    InputValues.runTimeStep = new Integer(Integer.parseInt(numOf.getText()));
+                    for(int i = 0; i < InputValues.runTimeStep; i++) {
+                        Critter.worldTimeStep();
+                    }
+                    Critter.displayWorld(critterWorld);
+                }
+                catch(Exception e){
+                    numOf.setText("invalid input");
+                }
+            }
+        });
         return runTab;
     }
 
@@ -142,10 +178,43 @@ public class Main extends Application implements EventHandler {
         ComboBox animateOptions = new ComboBox();
         animateOptions.getItems().addAll("5", "10", "20", "25");
         animateOptions.setEditable(false);
-        String value = (String) animateOptions.getValue(); //todo string to int
-        Button b = new Button("Animate");
-        fp.getChildren().addAll(animateOptions, b);
+        Button b = new Button("Start"); // todo: maybe change to one button that toggles its state
+        Button b2 = new Button("Stop");
+        b2.setDisable(true);
+        fp.getChildren().addAll(animateOptions, b, b2);
         animateTab.setContent(fp);
+        //
+        Timeline timeline = new Timeline();
+        timeline.setCycleCount(Animation.INDEFINITE);
+        KeyFrame timeStep = new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                for(int i = 0; i < InputValues.animateTimeStep; i++){
+                    Critter.worldTimeStep();
+                }
+                Critter.displayWorld(critterWorld);
+            }
+        });
+        timeline.getKeyFrames().add(timeStep);
+        b.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                // Black out all unnecessary inputs
+                b.setDisable(true);
+                b2.setDisable(false);
+                InputValues.animateTimeStep = Integer.parseInt((String) animateOptions.getValue());
+                timeline.play();
+            }
+        });
+        b2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                b.setDisable(false);
+                b2.setDisable(true);
+                timeline.stop();
+            }
+        });
+        //
         return animateTab;
     }
 
@@ -158,6 +227,20 @@ public class Main extends Application implements EventHandler {
         Button b = new Button("Set");
         fp.getChildren().addAll(seed, b);
         seedTab.setContent(fp);
+        //
+        b.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    InputValues.seedNumber = Integer.parseInt(seed.getText());
+                    Critter.setSeed(InputValues.seedNumber);
+                }
+                catch(Exception e){
+                    seed.setText("invalid input");
+                }
+            }
+        });
+        //
         return seedTab;
     }
 
@@ -185,61 +268,6 @@ public class Main extends Application implements EventHandler {
         mainWindow.setMaxWidth(w);
         mainWindow.setMinHeight(h);
         mainWindow.setMinWidth(w);
-    }
-
-    public void makeEventHandlers() {
-        runTimeSteps.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-                try{
-                    Integer numSteps = new Integer(1);  // TODO Get numSteps from slider or textbox
-                    for(int i = 0; i < numSteps; i++) {
-                        Critter.worldTimeStep();
-                    }
-                }
-                catch(Exception e){
-                    // Print error in textbox
-                }
-            }
-        });
-
-        make.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                //Critter.makeCritter(critterOptions.); // TODO Get input from dropdown text box
-            }
-        });
-
-        animate.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                // Black out all unnecessary inputs
-                Timer timer = new Timer();
-                TimerTask doStep = new TimerTask() {
-                    @Override
-                    public void run() {
-                        Integer numSteps = new Integer(1);  // Todo Get numSteps from slider or text box
-                        for(int i = 0; i < numSteps; i++) {
-                            Critter.worldTimeStep();
-                        }
-                    }
-                };
-                timer.scheduleAtFixedRate(doStep, 100, 1000);
-            }
-        });
-
-        seed.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    //Critter.setSeed(Integer.parseInt()); // TODO Take input from text box
-                }
-                catch(Exception e){
-                    // Print error in textbox
-                }
-            }
-        });
     }
 
     @Override
