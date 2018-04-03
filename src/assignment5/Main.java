@@ -213,7 +213,7 @@ public class Main extends Application implements EventHandler {
         make.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Critter.makeCritter(critterOptions.); // TODO Get input from dropdown textbox
+                //Critter.makeCritter(critterOptions.); // TODO Get input from dropdown textbox
             }
         });
         animate.setOnAction(new EventHandler<ActionEvent>() {
