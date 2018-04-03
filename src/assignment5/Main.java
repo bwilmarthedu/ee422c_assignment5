@@ -119,6 +119,9 @@ public class Main extends Application implements EventHandler {
     }
 
     private Tab buildMakeTab(Tab makeTab) {
+        //
+        make = new Button("Make Critters");
+        //
         FlowPane fp = new FlowPane(Orientation.VERTICAL);
         fp.setPrefWrapLength(150);
         fp.setPadding(new Insets(10));
@@ -130,7 +133,7 @@ public class Main extends Application implements EventHandler {
         String value = (String) critterOptions.getValue();
         TextField numOf = new TextField("Amount");
 
-        fp.getChildren().addAll(t, critterOptions, numOf);
+        fp.getChildren().addAll(t, critterOptions, numOf, make);
         makeTab.setContent(fp);
         return makeTab;
     }
@@ -210,7 +213,7 @@ public class Main extends Application implements EventHandler {
         make.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                // Critter.makeCritter(); // TODO Get input from dropdown textbox
+                Critter.makeCritter(critterOptions.); // TODO Get input from dropdown textbox
             }
         });
         animate.setOnAction(new EventHandler<ActionEvent>() {
@@ -245,7 +248,7 @@ public class Main extends Application implements EventHandler {
 
     @Override
     public void handle(Event event) {
-        runTimeSteps.setOnAction((ButtonEvent) -> System.out.println("DEBUG: runTimeSteps"));
+//        runTimeSteps.setOnAction((ButtonEvent) -> System.out.println("DEBUG: runTimeSteps"));
 //        make.setOnAction((event)-> System.out.println("DEBUG: make"));
 //        animate.setOnAction((event)-> System.out.println("DEBUG: animate"));
 //        seed.setOnAction((event)-> System.out.println("DEBUG: seed"));
