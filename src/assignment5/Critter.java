@@ -8,6 +8,9 @@ import javafx.scene.shape.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Double.max;
+import static java.lang.Math.min;
+
 public abstract class Critter {
     /* NEW FOR PROJECT 5 */
     public enum CritterShape {
@@ -274,64 +277,72 @@ public abstract class Critter {
     }
 
     public static void displayWorld(Object pane) {
-        Critter[][] newWorld = placeCritters();
-        for (int i = 0; i < Params.world_height; i++) {
-            for (int j = 0; j < Params.world_width; j++) {
+        AnchorPane pn = (AnchorPane) pane;
+
+        double width = pn.getWidth();
+        double height = pn.getHeight();
+        double unit = max(width, height) / max(Params.world_width, Params.world_height);
+        if (width != 0) {
+            Critter[][] newWorld = placeCritters(width, height);
+
+            //todo actual size
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
 //                System.out.print(newWorld[j][i]);
-                Critter crit = newWorld[j][i];
-                AnchorPane pn = (AnchorPane) pane;
-                if (crit != null) {
-                    switch (crit.viewShape()) {
-                        case CIRCLE:
-                            Circle circ = new Circle();
-                            circ.setFill(crit.viewColor());
-                            circ.setStroke(crit.viewOutlineColor());
-                            circ.setRadius(1);
-                            circ.setCenterX(crit.x_coord);
-                            circ.setCenterY(crit.y_coord);
-                            pn.getChildren().add(circ);
+                    Critter crit = newWorld[j][i];
+//                AnchorPane pn = (AnchorPane) pane;
+                    if (crit != null) {
+                        switch (crit.viewShape()) {
+                            case CIRCLE:
+                                Circle circ = new Circle();
+                                circ.setFill(crit.viewColor());
+                                circ.setStroke(crit.viewOutlineColor());
+                                circ.setRadius(unit / 2);
+                                circ.setCenterX(crit.x_coord);
+                                circ.setCenterY(crit.y_coord);
+                                pn.getChildren().add(circ);
 
-                            break;
-                        case SQUARE:
-                            Rectangle squ = new Rectangle();
-                            squ.setFill(crit.viewColor());
-                            squ.setStroke(crit.viewOutlineColor());
-                            squ.setWidth(1);
-                            squ.setHeight(1);
-                            squ.setX(crit.x_coord);
-                            squ.setY(crit.y_coord);
-                            pn.getChildren().add(squ);
-                            break;
-                        case DIAMOND:
-                            Polygon dia = new Polygon();
-                            dia.setFill(crit.viewColor());
-                            dia.setStroke(crit.viewOutlineColor());
-                            dia.getPoints().addAll(crit.x_coord - 0.5, crit.y_coord - 0.0, crit.x_coord - 0.0, crit.y_coord - 0.5, crit.x_coord + 0.5, crit.y_coord - 0.0, crit.x_coord - 0.0, crit.y_coord + 0.5);
-                            pn.getChildren().add(dia);
-                            break;
+                                break;
+                            case SQUARE:
+                                Rectangle squ = new Rectangle();
+                                squ.setFill(crit.viewColor());
+                                squ.setStroke(crit.viewOutlineColor());
+                                squ.setWidth(unit);
+                                squ.setHeight(unit);
+                                squ.setX(crit.x_coord);
+                                squ.setY(crit.y_coord);
+                                pn.getChildren().add(squ);
+                                break;
+                            case DIAMOND:
+                                Polygon dia = new Polygon();
+                                dia.setFill(crit.viewColor());
+                                dia.setStroke(crit.viewOutlineColor());
+                                dia.getPoints().addAll(crit.x_coord - (unit * 0.5), crit.y_coord - 0.0, crit.x_coord - 0.0, crit.y_coord - (unit * 0.5), crit.x_coord + (unit * 0.5), crit.y_coord - 0.0, crit.x_coord - 0.0, crit.y_coord + (unit * 0.5));
+                                pn.getChildren().add(dia);
+                                break;
 
-                        case TRIANGLE:
-                            Polygon tri = new Polygon();
-                            tri.setFill(crit.viewColor());
-                            tri.setStroke(crit.viewOutlineColor());
-                            tri.getPoints().addAll(crit.x_coord - 0.5, crit.y_coord - 0.5, crit.x_coord - 0.0, crit.y_coord + 0.5, crit.x_coord + 0.5, crit.y_coord + 0.5);
-                            pn.getChildren().add(tri);
-                            break;
-                        case STAR:
-                            //todo
-                            break;
-                    }
+                            case TRIANGLE:
+                                Polygon tri = new Polygon();
+                                tri.setFill(crit.viewColor());
+                                tri.setStroke(crit.viewOutlineColor());
+                                tri.getPoints().addAll(crit.x_coord - (unit * 0.5), crit.y_coord - (unit * 0.5), crit.x_coord - 0.0, crit.y_coord + (unit * 0.5), crit.x_coord + (unit * 0.5), crit.y_coord + (unit * 0.5));
+                                pn.getChildren().add(tri);
+                                break;
+                            case STAR:
+                                //todo
+                                break;
+                        }
 //                pn.getChildren().add(newWorld[j][i]);
+                    }
                 }
             }
-
         }
     }
 
-    private static Critter[][] placeCritters() {
-        Critter[][] critterWorld = new Critter[Params.world_width][Params.world_height];
-        for (int x = 0; x < Params.world_width; x++) {
-            for (int y = 0; y < Params.world_height; y++) {
+    private static Critter[][] placeCritters(double w, double h) {
+        Critter[][] critterWorld = new Critter[(int) w][(int) h];
+        for (int x = 0; x < (int) w; x++) {
+            for (int y = 0; y < (int) h; y++) {
                 critterWorld[x][y] = null;
             }
         }
@@ -484,7 +495,7 @@ public abstract class Critter {
     public static void clearWorld() {
     }
 
-/*HELPER FUNCTIONS*/
+    /*HELPER FUNCTIONS*/
 
     /**
      * This method displays a rudimentary model of the world in System.out.

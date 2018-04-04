@@ -15,13 +15,17 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 
-import java.awt.event.MouseEvent;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -59,17 +63,27 @@ public class Main extends Application implements EventHandler {
     public void start(Stage stage) {
         stage.setTitle("Critters Part Two");
         BorderPane border = new BorderPane();
+
         TabPane tabPane = new TabPane();
-        setSize(stage, WIDTH, HEIGHT);
+        tabPane.setMinWidth(250);
+        //        tabPane.setPrefWidth(333);
+        Border debug = new Border(new BorderStroke(Color.color(0.32,0.68,0.65), BorderStrokeStyle.DASHED, CornerRadii.EMPTY, BorderWidths.DEFAULT));
+//        setSize(stage, WIDTH, HEIGHT);
+        double height = stage.getHeight();
+        double width = stage.getWidth();
+        stage.minWidthProperty().setValue(500);
+        stage.minHeightProperty().setValue(450);
         Group root = new Group();
-        Scene scene = new Scene(root, WIDTH, HEIGHT);
+        Scene scene = new Scene(root, width, height);
         scene.getStylesheets().add("assignment5/gui.css");
         tabPane = setTabs(tabPane);
-        critterWorld.setPrefSize(750, 750); //todo: math to resize.
-        critterWorld.setPadding(new Insets(50));
-        Critter.displayWorld(critterWorld);
+        //debug
+        tabPane.setBorder(debug);
+//        critterWorld.setPrefSize(((max(width, height) / max(Params.world_width, Params.world_height))* width )- 250, ((max(width, height) / max(Params.world_width, Params.world_height))* height )- 250); //todo: math to resize.
+        
         //        Button printTextBtn = new Button("Show Stats");
         //        printTextBtn.setOnAction(e -> stats.setText("TODO STATS HERE"));
+
         stats.setText("TODO STATS HERE");
         try {
             stats.setText(Critter.runStats(getInstances("Algae")));
@@ -78,14 +92,20 @@ public class Main extends Application implements EventHandler {
         }
         stats.setDisable(true);
         stats.setMaxHeight(100);
-        //        tabPane.setPrefWidth(333);
         border.setRight(tabPane);
         border.setCenter(critterWorld);
         border.setBottom(stats);
         //        border.setBottom(printTextBtn);
         // bind to take available space
+
+        border.prefHeightProperty().bind(scene.heightProperty());
+        border.prefWidthProperty().bind(scene.widthProperty());
+        critterWorld.setBorder(debug);
+        critterWorld.setPadding(new Insets(50));
+        Critter.displayWorld(critterWorld);
         root.getChildren().add(border);
         stage.setScene(scene);
+        stage.sizeToScene();
         stage.show();
     }
 
