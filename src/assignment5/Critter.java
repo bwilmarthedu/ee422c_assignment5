@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Double.max;
+import static java.lang.Math.floor;
 import static java.lang.Math.min;
 
 public abstract class Critter {
@@ -280,11 +281,21 @@ public abstract class Critter {
         AnchorPane pn = (AnchorPane) pane;
         double width = pn.getWidth();
         double height = pn.getHeight();
-        double unit = max(width, height) / max(Params.world_width, Params.world_height);
+        double unit;
+        double worldAspectRatio = (double) Params.world_width/Params.world_height;
+        double windowAspectRatio = (double) width/height;
+        if(worldAspectRatio > windowAspectRatio) {
+            unit = (double) width / Params.world_width;
+            height = unit * Params.world_height;
+        }
+        else {
+            unit = (double) height / Params.world_height;
+            width = unit * Params.world_width;
+        }
         if (width != 0) {
             Critter[][] newWorld = placeCritters(width, height);
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
+            for (int i = 0; i < Params.world_height; i++) {
+                for (int j = 0; j < Params.world_width; j++) {
                     Critter crit = newWorld[j][i];
                     if (crit != null) {
                         switch (crit.viewShape()) {
@@ -292,19 +303,21 @@ public abstract class Critter {
                                 Circle circ = new Circle();
                                 circ.setFill(crit.viewColor());
                                 circ.setStroke(crit.viewOutlineColor());
-                                circ.setRadius(unit / 2);
-                                circ.setCenterX((width * crit.x_coord) / Params.world_width);
-                                circ.setCenterY((height * crit.y_coord) / Params.world_height);
+                                circ.setStrokeWidth(0);
+                                circ.setRadius(floor(unit / 2));
+                                circ.setCenterX(((crit.x_coord + 0.5) * width) / Params.world_width);
+                                circ.setCenterY(((crit.y_coord + 0.5) * height) / Params.world_height);
                                 pn.getChildren().add(circ);
                                 break;
                             case SQUARE:
                                 Rectangle squ = new Rectangle();
                                 squ.setFill(crit.viewColor());
                                 squ.setStroke(crit.viewOutlineColor());
-                                squ.setWidth(unit);
-                                squ.setHeight(unit);
-                                squ.setX(crit.x_coord);
-                                squ.setY(crit.y_coord);
+                                squ.setStrokeWidth(1);
+                                squ.setWidth(floor(unit-1));
+                                squ.setHeight(floor(unit-1));
+                                squ.setX(((crit.x_coord) * width) / Params.world_width);
+                                squ.setY(((crit.y_coord) * height) / Params.world_height);
                                 pn.getChildren().add(squ);
                                 break;
                             case DIAMOND:
@@ -352,14 +365,14 @@ public abstract class Critter {
     }
 
     private static Critter[][] placeCritters(double w, double h) {
-        Critter[][] critterWorld = new Critter[(int) w][(int) h];
-        for (int x = 0; x < (int) w; x++) {
-            for (int y = 0; y < (int) h; y++) {
+        Critter[][] critterWorld = new Critter[(int) Params.world_width][(int) Params.world_height];
+        for (int x = 0; x < (int) Params.world_width; x++) {
+            for (int y = 0; y < (int) Params.world_height; y++) {
                 critterWorld[x][y] = null;
             }
         }
         for (Critter c : population) {
-            critterWorld[(int) (w * (c.x_coord / Params.world_width))][(int) (h * (c.y_coord / Params.world_height))] = c;
+            critterWorld[(int) c.x_coord][(int) c.y_coord] = c; // todo made a change here
         }
         return critterWorld;
     }
@@ -547,7 +560,7 @@ public abstract class Critter {
         for (int i = 0; i < Params.world_height; i++) {
             for (int j = 0; j < Params.world_width; j++) {
                 for (Critter c : population) {
-                    if (c.x_coord == i && c.y_coord == j && c.energy > 0) {
+                    if (c.x_coord == j && c.y_coord == i && c.energy > 0) {
                         crittersOnSquare.add(c);
                     }
                 }

@@ -50,8 +50,8 @@ public class Main extends Application implements EventHandler {
 
     public static void main(String[] args) throws InvalidCritterException {
         for (int k = 0; k < 1; k++) {
-            Critter.makeCritter("Algae");
-            Critter.makeCritter("Craig");
+            //Critter.makeCritter("Algae");
+            //Critter.makeCritter("Craig");
         }
         launch(args);
 
@@ -65,10 +65,10 @@ public class Main extends Application implements EventHandler {
         TabPane tabPane = new TabPane();
         tabPane.setMinWidth(300);
         tabPane.setMinHeight(400);
-        Border debug = new Border(new BorderStroke(Color.color(0.32, 0.68, 0.65), BorderStrokeStyle.DASHED, CornerRadii.EMPTY, BorderWidths.DEFAULT));
+        Border debug = new Border(new BorderStroke(Color.color(0.32, 0.68, 0.65), BorderStrokeStyle.DASHED, CornerRadii.EMPTY, BorderWidths.EMPTY));
         double height = stage.getHeight();
         double width = stage.getWidth();
-        stage.minWidthProperty().setValue(500);
+        stage.minWidthProperty().setValue(800);
         stage.minHeightProperty().setValue(450);
         stage.setTitle("Critters Part Two");
         Group root = new Group();
@@ -161,6 +161,7 @@ public class Main extends Application implements EventHandler {
                     for (int i = 0; i < InputValues.amtOfCritters; i++) {
                         Critter.makeCritter(InputValues.makeWhichCritter);
                     }
+                    critterWorld.getChildren().clear();
                     Critter.displayWorld(critterWorld);
                 } catch (Exception e) {
                     numOf.setPromptText("invalid input");
@@ -191,6 +192,7 @@ public class Main extends Application implements EventHandler {
                     for (int i = 0; i < InputValues.runTimeStep; i++) {
                         Critter.worldTimeStep();
                     }
+                    critterWorld.getChildren().clear();
                     Critter.displayWorld(critterWorld);
                 } catch (Exception e) {
                     numOf.setPromptText("invalid input");
