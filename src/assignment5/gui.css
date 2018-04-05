@@ -1,8 +1,187 @@
- @font-face{
- font-family: myFamily;
- src: url(https://fonts.googleapis.com/css?family=Alegreya Sans SC)}
+/*This stylesheet made with reference to "FlatBee theme" by karlthebee (https://github.com/karlthebee/flatbee) under CC-BY-NC 4.0 License */
+{
+    -color: #535258
+;
+    -lightColor: derive(-color, +50%)
+;
+    -lighterColor: derive(-color, +70%)
+;
+    -darkerColor: derive(-color, -30%)
+;
+    -white: #efefef
+;
+    -gray: #f0f0f0
+;
+    -darkGray: derive(-gray, -3%)
+;
+    -black: #444444dd
+;
+    -abort: #e74c3c
+;
+}
 
+.root {
+    -fx-background-color: -white;
+    -fx-fill-width: true;
+    -fx-color: -color;
+    -fx-fill-height: true;
+    -fx-font-family: 'Segoe UI';
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
 
-.root{
-    -fx-font-family: "Alegraya";
+/*
+ * **********
+ * BUTTONS
+ * **********
+ *
+ */
+.button {
+    -fx-background-color: -gray, -gray, -gray, -gray;
+    /*-fx-border-color: -darkGray;*/
+    -fx-text-fill: -darkerColor;
+
+}
+
+.button:default {
+    -fx-background-color: -color;
+    -fx-border-color: -darkGray;
+}
+
+.button:cancel {
+    -fx-background-color: -abort;
+}
+
+.button:focused {
+    -fx-color: -color;
+    -fx-background-color: -color;
+    -fx-focus-color: -color;
+    -fx-text-fill: -white;
+
+}
+
+/*
+ * **********
+ * PROGRESSBAR
+ * **********
+ *
+ */
+.progress-indicator {
+    -fx-indeterminate-segment-count: 12;
+    -fx-progress-color: -color;
+    -fx-spin-enabled: true;
+}
+
+.progress-bar > *.bar {
+    -fx-background-color: -color;
+}
+
+.progress-bar > *.track {
+    -fx-background-color: -gray;
+}
+
+.progress-bar:determinate > *.determinate-indicator > *.track {
+    -fx-background-color: -gray;
+}
+
+.progress-bar:determinate > *.determinate-indicator > *.indicator {
+    -fx-background-color: -gray;
+}
+
+/*
+ * **********
+ * COMBOBOX
+ * **********
+ *
+ */
+.combo-box {
+    -fx-background-color: -gray;
+}
+
+.check-box > *.box {
+    -fx-background-color: -color;
+}
+
+.combo-box .cell:selected {
+    -fx-background-color: -color;
+    -fx-text-fill: -white;
+    /*-fx-fill: -color;*/
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+
+    -fx-text-fill: BLACK;
+    -fx-background-color: -lightcolor;
+}
+
+/*
+ * **********
+ * TABPANE
+ * **********
+ *
+ */
+.tab-pane > *.tab-header-area {
+    -fx-padding: 0, 0, 0, 0;
+    -fx-background-color: -white;
+    -fx-text-fill: -darkerColor;
+}
+
+.tab-pane > *.tab-header-area > *.headers-region > *.tab:selected:top {
+    -fx-padding: 6, 6, 6, 6;
+    -fx-text-fill: -darkerColor;
+    -fx-background-color: -color;
+}
+
+.tab-pane > *.tab-header-area > *.headers-region > *.tab:selected > *.tab-container > *.tab-label {
+}
+
+.tab-pane > *.tab-header-area > *.headers-region > *.tab:top {
+    -fx-padding: 4, 4, 4, 4;
+    -fx-text-fill: -darkerColor;
+    -fx-background-color: -white;
+}
+
+.tab-pane > *.tab-header-area > *.control-buttons-tab > *.container > *.tab-down-button {
+    -fx-background-color: -white;
+    -fx-text-fill: -darkerColor;
+}
+
+.tab-pane > *.tab-header-area > *.control-buttons-tab > *.container > *.tab-down-button > *.arrow {
+    -fx-background-color: -white;
+    -fx-text-fill: -darkerColor;
+
+}
+
+.tab-pane *.tab-header-background {
+    -fx-background-color: -white;
+    -fx-text-fill: -darkerColor;
+
+}
+.tab .tab-label {    -fx-text-fill: -darkerColor;
+}
+.tab:selected .tab-label {
+    -fx-text-fill: -white;
+
+}
+
+/*
+ * **********
+ * Text fields / inputs
+ * **********
+ *
+ */
+.text-field {
+    -fx-highlight-fill: -color;
+    -fx-highlight-text-fill: -white;
+}
+
+.text-area {
+    -fx-highlight-fill: -color;
+    -fx-highlight-text-fill: -white;
+
+}
+
+.text-area:disabled, .text-area:disabled > * {
+    -fx-opacity: 0.8;
+    -fx-background-color: -color;
 }
