@@ -47,7 +47,7 @@ public abstract class Critter {
     public abstract CritterShape viewShape();
 
     private static String myPackage;
-    private static List<Critter> population = new java.util.ArrayList<Critter>();
+    public static List<Critter> population = new java.util.ArrayList<Critter>();
     private static List<Critter> babies = new java.util.ArrayList<Critter>();
 
     // Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
@@ -278,19 +278,14 @@ public abstract class Critter {
 
     public static void displayWorld(Object pane) {
         AnchorPane pn = (AnchorPane) pane;
-
         double width = pn.getWidth();
         double height = pn.getHeight();
         double unit = max(width, height) / max(Params.world_width, Params.world_height);
         if (width != 0) {
             Critter[][] newWorld = placeCritters(width, height);
-
-            //todo actual size
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
-//                System.out.print(newWorld[j][i]);
                     Critter crit = newWorld[j][i];
-//                AnchorPane pn = (AnchorPane) pane;
                     if (crit != null) {
                         switch (crit.viewShape()) {
                             case CIRCLE:
@@ -298,10 +293,9 @@ public abstract class Critter {
                                 circ.setFill(crit.viewColor());
                                 circ.setStroke(crit.viewOutlineColor());
                                 circ.setRadius(unit / 2);
-                                circ.setCenterX(crit.x_coord);
-                                circ.setCenterY(crit.y_coord);
+                                circ.setCenterX((width * crit.x_coord) / Params.world_width);
+                                circ.setCenterY((height * crit.y_coord) / Params.world_height);
                                 pn.getChildren().add(circ);
-
                                 break;
                             case SQUARE:
                                 Rectangle squ = new Rectangle();
@@ -317,22 +311,40 @@ public abstract class Critter {
                                 Polygon dia = new Polygon();
                                 dia.setFill(crit.viewColor());
                                 dia.setStroke(crit.viewOutlineColor());
-                                dia.getPoints().addAll(crit.x_coord - (unit * 0.5), crit.y_coord - 0.0, crit.x_coord - 0.0, crit.y_coord - (unit * 0.5), crit.x_coord + (unit * 0.5), crit.y_coord - 0.0, crit.x_coord - 0.0, crit.y_coord + (unit * 0.5));
+                                dia.getPoints().addAll(crit.x_coord - (unit * 0.5), crit.y_coord - 0.0,
+                                        crit.x_coord - 0.0, crit.y_coord - (unit * 0.5),
+                                        crit.x_coord + (unit * 0.5), crit.y_coord - 0.0,
+                                        crit.x_coord - 0.0, crit.y_coord + (unit * 0.5));
                                 pn.getChildren().add(dia);
                                 break;
-
                             case TRIANGLE:
                                 Polygon tri = new Polygon();
                                 tri.setFill(crit.viewColor());
                                 tri.setStroke(crit.viewOutlineColor());
-                                tri.getPoints().addAll(crit.x_coord - (unit * 0.5), crit.y_coord - (unit * 0.5), crit.x_coord - 0.0, crit.y_coord + (unit * 0.5), crit.x_coord + (unit * 0.5), crit.y_coord + (unit * 0.5));
+                                tri.getPoints().addAll(
+                                        crit.x_coord - (unit * 0.5), crit.y_coord - (unit * 0.5),
+                                        crit.x_coord - 0.0, crit.y_coord + (unit * 0.5),
+                                        crit.x_coord + (unit * 0.5), crit.y_coord + (unit * 0.5));
                                 pn.getChildren().add(tri);
                                 break;
                             case STAR:
-                                //todo
+                                Polygon Star = new Polygon();
+                                Star.getPoints().addAll(crit.x_coord + 0.0, crit.y_coord - unit,
+                                        crit.x_coord + (unit * 0.2), crit.y_coord - (unit * 0.2),
+                                        crit.x_coord + unit, crit.y_coord - (unit * 0.2),
+                                        crit.x_coord + (unit / 2), crit.y_coord + (unit * 0.2),
+                                        crit.x_coord + (unit * 0.7), crit.y_coord + unit,
+                                        crit.x_coord + 0.0, crit.y_coord + (unit * 0.5),
+                                        crit.x_coord - (unit * 0.7), crit.y_coord + unit,
+                                        crit.x_coord - (unit / 2), crit.y_coord + (unit * 0.2),
+                                        crit.x_coord - unit, crit.y_coord - (unit * 0.2),
+                                        crit.x_coord - (unit * 0.2), crit.y_coord - (unit * 0.2));
+                                Star.setFill(crit.viewColor());
+                                Star.setStroke(crit.viewOutlineColor());
+                                pn.getChildren().add(Star);
                                 break;
                         }
-//                pn.getChildren().add(newWorld[j][i]);
+                        //                pn.getChildren().add(newWorld[j][i]);
                     }
                 }
             }
@@ -347,7 +359,7 @@ public abstract class Critter {
             }
         }
         for (Critter c : population) {
-            critterWorld[c.x_coord][c.y_coord] = c;
+            critterWorld[(int) (w * (c.x_coord / Params.world_width))][(int) (h * (c.y_coord / Params.world_height))] = c;
         }
         return critterWorld;
     }
@@ -417,26 +429,25 @@ public abstract class Critter {
     public static String runStats(List<Critter> critters) {
         return "";
     }
-
-//    public static void runStats(List<Critter> critters) {
-//        System.out.print("" + critters.size() + " critters as follows -- ");
-//        java.util.Map<String, Integer> critter_count = new java.util.HashMap<String, Integer>();
-//        for (Critter crit : critters) {
-//            String crit_string = crit.toString();
-//            Integer old_count = critter_count.get(crit_string);
-//            if (old_count == null) {
-//                critter_count.put(crit_string, 1);
-//            } else {
-//                critter_count.put(crit_string, old_count.intValue() + 1);
-//            }
-//        }
-//        String prefix = "";
-//        for (String s : critter_count.keySet()) {
-//            System.out.print(prefix + s + ":" + critter_count.get(s));
-//            prefix = ", ";
-//        }
-//        System.out.println();
-//    }
+    //    public static void runStats(List<Critter> critters) {
+    //        System.out.print("" + critters.size() + " critters as follows -- ");
+    //        java.util.Map<String, Integer> critter_count = new java.util.HashMap<String, Integer>();
+    //        for (Critter crit : critters) {
+    //            String crit_string = crit.toString();
+    //            Integer old_count = critter_count.get(crit_string);
+    //            if (old_count == null) {
+    //                critter_count.put(crit_string, 1);
+    //            } else {
+    //                critter_count.put(crit_string, old_count.intValue() + 1);
+    //            }
+    //        }
+    //        String prefix = "";
+    //        for (String s : critter_count.keySet()) {
+    //            System.out.print(prefix + s + ":" + critter_count.get(s));
+    //            prefix = ", ";
+    //        }
+    //        System.out.println();
+    //    }
 
     /* the TestCritter class allows some critters to "cheat". If you want to
      * create tests of your Critter model, you can create subclasses of this class
