@@ -1,7 +1,16 @@
 package assignment5;
 
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Double.max;
+import static java.lang.Math.floor;
+import static java.lang.Math.min;
 
 public abstract class Critter {
     /* NEW FOR PROJECT 5 */
@@ -11,6 +20,15 @@ public abstract class Critter {
         TRIANGLE,
         DIAMOND,
         STAR
+    }
+
+    private int x_coord;
+    private int y_coord;
+
+    private int energy = 0;
+
+    protected int getEnergy() {
+        return energy;
     }
 
     /* the default color is white, which I hope makes critters invisible by default
@@ -39,8 +57,8 @@ public abstract class Critter {
     public abstract CritterShape viewShape();
 
     private static String myPackage;
-    private static List<Critter> population = new java.util.ArrayList<Critter>();
-    private static List<Critter> babies = new java.util.ArrayList<Critter>();
+    //public static List<Critter> population = new java.util.ArrayList<Critter>();
+    //private static List<Critter> babies = new java.util.ArrayList<Critter>();
 
     // Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
     static {
@@ -50,10 +68,72 @@ public abstract class Critter {
     protected final String look(int direction, boolean steps) {
         String s = null;
         this.energy -= Params.look_energy_cost;
-        //todo
-        //if occupied
-        //return occupying Critter . toString
-        //if unoccupied
+        int distance;
+        int x = 0;
+        int y = 0;
+        if(steps == false){ distance = 1; }
+        else{ distance = 2; };
+        switch (direction) {
+            case 0:
+                x = (x_coord + distance) % Params.world_width;
+                break;
+            case 1:
+                x = (x_coord + distance) % Params.world_width;
+                if (y_coord - distance < 0) {
+                    y = y_coord - distance + Params.world_height;
+                } else {
+                    y -= distance;
+                }
+                break;
+            case 2:
+                if (y_coord - distance < 0) {
+                    y = y_coord - distance + Params.world_height;
+                } else {
+                    y -= distance;
+                }
+                break;
+            case 3:
+                if (x_coord - distance < 0) {
+                    x = x_coord - distance + Params.world_width;
+                } else {
+                    x -= distance;
+                }
+                if (y_coord - distance < 0) {
+                    y = y_coord - distance + Params.world_height;
+                } else {
+                    y -= distance;
+                }
+                break;
+            case 4:
+                if (x_coord - distance < 0) {
+                    x = x_coord - distance + Params.world_width;
+                } else {
+                    x -= distance;
+                }
+                break;
+            case 5:
+                if (x_coord - distance < 0) {
+                    x = x_coord - distance + Params.world_width;
+                } else {
+                    x -= distance;
+                }
+                y = (y_coord + distance) % Params.world_height;
+                break;
+            case 6:
+                y = (y_coord + distance) % Params.world_height;
+                break;
+            case 7:
+                x = (x_coord + distance) % Params.world_width;
+                y = (y_coord + distance) % Params.world_height;
+                break;
+        }
+
+        if(CritterWorld.oldWorld[x][y] != null && CritterWorld.fightMode == 0){
+            return CritterWorld.oldWorld[x][y].toString();
+        }
+        else if(CritterWorld.critterWorld[x][y] != null && CritterWorld.fightMode == 1){
+            return CritterWorld.critterWorld[x][y].toString();
+        }
         return null;
         //todo later: handle look during doTimeStep vs. look during run
     }
@@ -74,14 +154,7 @@ public abstract class Critter {
         return "";
     }
 
-    private int energy = 0;
 
-    protected int getEnergy() {
-        return energy;
-    }
-
-    private int x_coord;
-    private int y_coord;
     //todo -- Track critter movement
 
     /**
@@ -175,7 +248,7 @@ public abstract class Critter {
      */
     protected final void reproduce(Critter offspring, int direction) {
         if (this.energy > Params.min_reproduce_energy) {
-            babies.add(offspring);
+            CritterWorld.babies.add(offspring);
             offspring.energy = (int) Math.floor(0.5 * this.energy);
             this.energy = (int) Math.ceil(0.5 * this.energy);
             switch (direction) {
@@ -245,14 +318,17 @@ public abstract class Critter {
     public static void worldTimeStep() {
         // 1. Increment Timestep
         // 2. doTimeSteps();
-        for (Critter c : population) {
+        CritterWorld.fightMode = 0;
+        CritterWorld.oldWorld = placeCritters();
+        for (Critter c : CritterWorld.population) {
             c.doTimeStep();
         }
         // 3. doEncounters();
+        CritterWorld.fightMode = 1;
         doEncounters();
         removeDead();
         // 4. updateRestEnergy();
-        for (Critter c : population) {
+        for (Critter c : CritterWorld.population) {
             c.energy -= Params.rest_energy_cost;
         }
         removeDead();
@@ -264,12 +340,111 @@ public abstract class Critter {
             }
         }
         // 7. moveBabies();
-        population.addAll(babies);
-        babies.clear();
+        CritterWorld.population.addAll(CritterWorld.babies);
+        CritterWorld.babies.clear();
     }
 
     public static void displayWorld(Object pane) {
-        //todo
+        AnchorPane pn = (AnchorPane) pane;
+        double width = pn.getWidth();
+        double height = pn.getHeight();
+        double unit;
+        double worldAspectRatio = (double) Params.world_width / Params.world_height;
+        double windowAspectRatio = (double) width / height;
+        if (worldAspectRatio > windowAspectRatio) {
+            unit = (double) width / Params.world_width;
+            height = unit * Params.world_height;
+        } else {
+            unit = (double) height / Params.world_height;
+            width = unit * Params.world_width;
+        }
+        if (width != 0) {
+            Critter[][] newWorld = placeCritters(); // Todo critterworld
+            for (int i = 0; i < Params.world_height; i++) {
+                for (int j = 0; j < Params.world_width; j++) {
+                    Critter crit = newWorld[j][i];
+                    if (crit != null) {
+                        switch (crit.viewShape()) {
+                            case CIRCLE:
+                                Circle circ = new Circle();
+                                circ.setFill(crit.viewColor());
+                                circ.setStroke(crit.viewOutlineColor());
+                                circ.setStrokeWidth(1);
+                                circ.setRadius(floor((unit / 2)-1));
+                                circ.setCenterX(((crit.x_coord + 0.5) * width) / Params.world_width);
+                                circ.setCenterY(((crit.y_coord + 0.5) * height) / Params.world_height);
+                                pn.getChildren().add(circ);
+                                break;
+                            case SQUARE:
+                                Rectangle squ = new Rectangle();
+                                squ.setFill(crit.viewColor());
+                                squ.setStroke(crit.viewOutlineColor());
+                                squ.setStrokeWidth(1);
+                                squ.setWidth(floor(unit - 1));
+                                squ.setHeight(floor(unit - 1));
+                                squ.setX(((crit.x_coord) * width) / Params.world_width);
+                                squ.setY(((crit.y_coord) * height) / Params.world_height);
+                                pn.getChildren().add(squ);
+                                break;
+                            case DIAMOND:
+                                Polygon dia = new Polygon();
+                                dia.setFill(crit.viewColor());
+                                dia.setStroke(crit.viewOutlineColor());
+                                dia.setStrokeWidth(1);
+                                dia.getPoints().addAll(
+                                        ((((crit.x_coord + 0.5) * width) / Params.world_width) - 1), ((crit.y_coord) * height) / Params.world_height,
+                                        ((crit.x_coord) * width) / Params.world_width, ((((crit.y_coord + 0.5) * height) / Params.world_height) - 1),
+                                        ((((crit.x_coord + 0.5) * width) / Params.world_width) - 1), ((((crit.y_coord + 1) * height) / Params.world_height) - 2),
+                                        ((((crit.x_coord + 1) * width) / Params.world_width) - 2), ((((crit.y_coord + 0.5) * height) / Params.world_height) - 1));
+                                pn.getChildren().add(dia);
+                                break;
+                            case TRIANGLE:
+                                Polygon tri = new Polygon();
+                                tri.setFill(crit.viewOutlineColor());
+                                tri.setStrokeWidth(1);
+                                tri.getPoints().addAll(
+                                        ((((crit.x_coord + 0.5) * width) / Params.world_width) - 1), ((crit.y_coord) * height) / Params.world_height,
+                                        ((crit.x_coord) * width) / Params.world_width, ((((crit.y_coord + 1) * height) / Params.world_height) - 2),
+                                        ((((crit.x_coord + 1) * width) / Params.world_width) - 2), ((((crit.y_coord + 1) * height) / Params.world_height) - 2));
+                                pn.getChildren().add(tri);
+                                break;
+                            case STAR:
+                                Polygon Star = new Polygon();
+                                Star.getPoints().addAll(
+                                        ((width * (crit.x_coord + 0.00 + 0.5) / Params.world_width) - 0.0 - 1.0), ((height * (crit.y_coord - 0.50 + 0.5) / Params.world_height) + 1.0 - 1.0),
+                                        ((width * (crit.x_coord + 0.10 + 0.5) / Params.world_width) - 0.2 - 1.0), ((height * (crit.y_coord - 0.10 + 0.5) / Params.world_height) + 0.2 - 1.0),
+                                        ((width * (crit.x_coord + 0.50 + 0.5) / Params.world_width) - 1.0 - 1.0), ((height * (crit.y_coord - 0.10 + 0.5) / Params.world_height) + 0.2 - 1.0),
+                                        ((width * (crit.x_coord + 0.25 + 0.5) / Params.world_width) - 0.5 - 1.0), ((height * (crit.y_coord + 0.10 + 0.5) / Params.world_height) - 0.2 - 1.0),
+                                        ((width * (crit.x_coord + 0.35 + 0.5) / Params.world_width) - 0.7 - 1.0), ((height * (crit.y_coord + 0.50 + 0.5) / Params.world_height) - 1.0 - 1.0),
+                                        ((width * (crit.x_coord + 0.00 + 0.5) / Params.world_width) + 0.0 - 1.0), ((height * (crit.y_coord + 0.25 + 0.5) / Params.world_height) - 0.5 - 1.0),
+                                        ((width * (crit.x_coord - 0.35 + 0.5) / Params.world_width) + 0.7 - 1.0), ((height * (crit.y_coord + 0.50 + 0.5) / Params.world_height) - 1.0 - 1.0),
+                                        ((width * (crit.x_coord - 0.25 + 0.5) / Params.world_width) + 0.5 - 1.0), ((height * (crit.y_coord + 0.10 + 0.5) / Params.world_height) - 0.2 - 1.0),
+                                        ((width * (crit.x_coord - 0.50 + 0.5) / Params.world_width) + 1.0 - 1.0), ((height * (crit.y_coord - 0.10 + 0.5) / Params.world_height) + 0.2 - 1.0),
+                                        ((width * (crit.x_coord - 0.10 + 0.5) / Params.world_width) + 0.2 - 1.0), ((height * (crit.y_coord - 0.10 + 0.5) / Params.world_height) + 0.2 - 1.0)
+                                );
+                                Star.setFill(crit.viewColor());
+                                Star.setStroke(crit.viewOutlineColor());
+                                pn.getChildren().add(Star);
+                                break;
+                        }
+                        //                pn.getChildren().add(newWorld[j][i]);
+                    }
+                }
+            }
+        }
+    }
+
+    private static Critter[][] placeCritters() {
+        Critter[][] critterWorld = new Critter[(int) Params.world_width][(int) Params.world_height];
+        for (int x = 0; x < (int) Params.world_width; x++) {
+            for (int y = 0; y < (int) Params.world_height; y++) {
+                critterWorld[x][y] = null;
+            }
+        }
+        for (Critter c : CritterWorld.population) {
+            critterWorld[(int) c.x_coord][(int) c.y_coord] = c; // todo made a change here
+        }
+        return critterWorld;
     }
     /* Alternate displayWorld, where you use Main.<pane> to reach into your
        display component.
@@ -296,7 +471,7 @@ public abstract class Critter {
         try {
             Class c = Class.forName(myPackage + "." + critter_class_name);
             Critter cr = (Critter) c.newInstance();
-            population.add(cr);
+            CritterWorld.population.add(cr);
             cr.x_coord = getRandomInt(Params.world_width);
             cr.y_coord = getRandomInt(Params.world_height);
             cr.energy = Params.start_energy;
@@ -316,8 +491,8 @@ public abstract class Critter {
         List<Critter> result = new java.util.ArrayList<Critter>();
         try {
             Class c = Class.forName(myPackage + "." + critter_class_name);
-            for (int i = 0; i < population.size(); i++) {
-                Critter tempCritter = population.get(i);
+            for (int i = 0; i < CritterWorld.population.size(); i++) {
+                Critter tempCritter = CritterWorld.population.get(i);
                 if (c.equals(tempCritter.getClass())) {
                     result.add(tempCritter);
                 }
@@ -337,26 +512,25 @@ public abstract class Critter {
     public static String runStats(List<Critter> critters) {
         return "";
     }
-
-//    public static void runStats(List<Critter> critters) {
-//        System.out.print("" + critters.size() + " critters as follows -- ");
-//        java.util.Map<String, Integer> critter_count = new java.util.HashMap<String, Integer>();
-//        for (Critter crit : critters) {
-//            String crit_string = crit.toString();
-//            Integer old_count = critter_count.get(crit_string);
-//            if (old_count == null) {
-//                critter_count.put(crit_string, 1);
-//            } else {
-//                critter_count.put(crit_string, old_count.intValue() + 1);
-//            }
-//        }
-//        String prefix = "";
-//        for (String s : critter_count.keySet()) {
-//            System.out.print(prefix + s + ":" + critter_count.get(s));
-//            prefix = ", ";
-//        }
-//        System.out.println();
-//    }
+    //    public static void runStats(List<Critter> critters) {
+    //        System.out.print("" + critters.size() + " critters as follows -- ");
+    //        java.util.Map<String, Integer> critter_count = new java.util.HashMap<String, Integer>();
+    //        for (Critter crit : critters) {
+    //            String crit_string = crit.toString();
+    //            Integer old_count = critter_count.get(crit_string);
+    //            if (old_count == null) {
+    //                critter_count.put(crit_string, 1);
+    //            } else {
+    //                critter_count.put(crit_string, old_count.intValue() + 1);
+    //            }
+    //        }
+    //        String prefix = "";
+    //        for (String s : critter_count.keySet()) {
+    //            System.out.print(prefix + s + ":" + critter_count.get(s));
+    //            prefix = ", ";
+    //        }
+    //        System.out.println();
+    //    }
 
     /* the TestCritter class allows some critters to "cheat". If you want to
      * create tests of your Critter model, you can create subclasses of this class
@@ -395,7 +569,7 @@ public abstract class Critter {
          * implemented for grading tests to work.
          */
         protected static List<Critter> getPopulation() {
-            return population;
+            return CritterWorld.population;
         }
 
         /*
@@ -405,7 +579,7 @@ public abstract class Critter {
          * at either the beginning OR the end of every timestep.
          */
         protected static List<Critter> getBabies() {
-            return babies;
+            return CritterWorld.babies;
         }
     }
 
@@ -415,7 +589,7 @@ public abstract class Critter {
     public static void clearWorld() {
     }
 
-/*HELPER FUNCTIONS*/
+    /*HELPER FUNCTIONS*/
 
     /**
      * This method displays a rudimentary model of the world in System.out.
@@ -439,7 +613,7 @@ public abstract class Critter {
             world[Params.world_height + 1][j] = '-';
         }
         // Populate with critters
-        for (Critter c : population) {
+        for (Critter c : CritterWorld.population) {
             world[c.y_coord + 1][c.x_coord + 1] = c.toString().charAt(0);
         }
         // Print world
@@ -455,8 +629,8 @@ public abstract class Critter {
         List<Critter> crittersOnSquare = new ArrayList<Critter>();
         for (int i = 0; i < Params.world_height; i++) {
             for (int j = 0; j < Params.world_width; j++) {
-                for (Critter c : population) {
-                    if (c.x_coord == i && c.y_coord == j && c.energy > 0) {
+                for (Critter c : CritterWorld.population) {
+                    if (c.x_coord == j && c.y_coord == i && c.energy > 0) {
                         crittersOnSquare.add(c);
                     }
                 }
@@ -510,10 +684,10 @@ public abstract class Critter {
      * This method removes all Critters from the world that have less than or equal to 0 energy.
      */
     private static void removeDead() {
-        for (int i = 0; i < population.size(); i++) {
-            Critter c = population.get(i);
+        for (int i = 0; i < CritterWorld.population.size(); i++) {
+            Critter c = CritterWorld.population.get(i);
             if (c.energy <= 0) {
-                population.remove(c);
+                CritterWorld.population.remove(c);
             }
         }
     }
