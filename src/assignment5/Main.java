@@ -121,6 +121,18 @@ public class Main extends Application implements EventHandler {
     }
 
     private Tab buildStatsTab(Tab statsTab) {
+        FlowPane fp = new FlowPane(Orientation.VERTICAL);
+        fp.setPrefWrapLength(150);
+        fp.setPadding(new Insets(10));
+        fp.setVgap(25);
+        Text t = new Text("Select a Critter");
+        ComboBox critterOptions = new ComboBox();
+        critterOptions.getItems().addAll(crits);
+        critterOptions.getSelectionModel().selectFirst();
+        critterOptions.setEditable(false);
+        Button b = new Button("Stats");
+        fp.getChildren().addAll(t, critterOptions, b);
+        statsTab.setContent(fp);
         return statsTab;
     }
 
