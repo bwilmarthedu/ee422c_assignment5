@@ -88,6 +88,7 @@ public class Main extends Application implements EventHandler {
         tabPane = setTabs(tabPane);
         //debug
         tabPane.setBorder(debug);
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         //
         //        stats.setText("DEBUG");
         try {
