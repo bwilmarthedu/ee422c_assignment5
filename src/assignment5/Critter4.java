@@ -1,4 +1,4 @@
-package assignment4;
+package assignment5;
 /* CRITTERS Main.java
  * EE422C Project 4 submission by
  * Replace <...> with your actual data.
@@ -12,17 +12,19 @@ package assignment4;
  * Spring 2018
  */
 
+import assignment5.Critter;
+
 /**
  * One of two required Critters. Named Critter2 in accordance with project instructions
  * Critter2 is a "pacifist" ... she'll fight at random. She also has an "always forward" mentality and only moves in one direction.
  */
-public class Critter2 extends Critter {
+public class Critter4 extends Critter {
     int fight = 0;
 
     /**
      * Constructor
      */
-    public Critter2() {
+    public Critter4() {
         fight = (Critter.getRandomInt(10) % 2);
     }
 
@@ -32,7 +34,7 @@ public class Critter2 extends Critter {
     @Override
     public void doTimeStep() {
         walk(0);
-        Critter2 baby = new Critter2();
+        Critter4 baby = new Critter4();
         reproduce(baby, 0);
     }
 
@@ -48,6 +50,11 @@ public class Critter2 extends Critter {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public CritterShape viewShape() {
+        return null;
     }
 
     /**

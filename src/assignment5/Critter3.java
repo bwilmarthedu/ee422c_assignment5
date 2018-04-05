@@ -13,18 +13,20 @@ package assignment4;
  * Spring 2018
  */
 
+import assignment5.Critter;
+
 /**
  * One of two required Critters. Named Critter1 in accordance with instructions
  * <p>
  * Critter1 is a vegetarian: She by default fights Algae. She also only walks/runs (randomly chosen) in the cardinal directions.
  */
-public class Critter1 extends Critter {
+public class Critter3 extends Critter {
     int dir = 0;
 
     /**
      * Constructor
      */
-    public Critter1() {
+    public Critter3() {
         dir = Critter.getRandomInt(10) % 2;
     }
 
@@ -51,6 +53,11 @@ public class Critter1 extends Critter {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public CritterShape viewShape() {
+        return null;
     }
 
     /**
