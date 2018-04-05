@@ -282,13 +282,12 @@ public abstract class Critter {
         double width = pn.getWidth();
         double height = pn.getHeight();
         double unit;
-        double worldAspectRatio = (double) Params.world_width/Params.world_height;
-        double windowAspectRatio = (double) width/height;
-        if(worldAspectRatio > windowAspectRatio) {
+        double worldAspectRatio = (double) Params.world_width / Params.world_height;
+        double windowAspectRatio = (double) width / height;
+        if (worldAspectRatio > windowAspectRatio) {
             unit = (double) width / Params.world_width;
             height = unit * Params.world_height;
-        }
-        else {
+        } else {
             unit = (double) height / Params.world_height;
             width = unit * Params.world_width;
         }
@@ -314,8 +313,8 @@ public abstract class Critter {
                                 squ.setFill(crit.viewColor());
                                 squ.setStroke(crit.viewOutlineColor());
                                 squ.setStrokeWidth(1);
-                                squ.setWidth(floor(unit-1));
-                                squ.setHeight(floor(unit-1));
+                                squ.setWidth(floor(unit - 1));
+                                squ.setHeight(floor(unit - 1));
                                 squ.setX(((crit.x_coord) * width) / Params.world_width);
                                 squ.setY(((crit.y_coord) * height) / Params.world_height);
                                 pn.getChildren().add(squ);
@@ -325,10 +324,10 @@ public abstract class Critter {
                                 dia.setFill(crit.viewOutlineColor());
                                 dia.setStrokeWidth(0);
                                 dia.getPoints().addAll(
-                                        ((((crit.x_coord + 0.5) * width) / Params.world_width)-1), ((crit.y_coord) * height) / Params.world_height,
-                                        ((crit.x_coord) * width) / Params.world_width, ((((crit.y_coord + 0.5) * height) / Params.world_height)-1),
-                                        ((((crit.x_coord + 0.5) * width) / Params.world_width)-1), ((((crit.y_coord + 1) * height) / Params.world_height)-2),
-                                        ((((crit.x_coord + 1) * width) / Params.world_width)-2), ((((crit.y_coord + 0.5) * height) / Params.world_height)-1));
+                                        ((((crit.x_coord + 0.5) * width) / Params.world_width) - 1), ((crit.y_coord) * height) / Params.world_height,
+                                        ((crit.x_coord) * width) / Params.world_width, ((((crit.y_coord + 0.5) * height) / Params.world_height) - 1),
+                                        ((((crit.x_coord + 0.5) * width) / Params.world_width) - 1), ((((crit.y_coord + 1) * height) / Params.world_height) - 2),
+                                        ((((crit.x_coord + 1) * width) / Params.world_width) - 2), ((((crit.y_coord + 0.5) * height) / Params.world_height) - 1));
                                 pn.getChildren().add(dia);
                                 break;
                             case TRIANGLE:
@@ -336,37 +335,25 @@ public abstract class Critter {
                                 tri.setFill(crit.viewOutlineColor());
                                 tri.setStrokeWidth(0);
                                 tri.getPoints().addAll(
-                                        ((((crit.x_coord + 0.5) * width) / Params.world_width)-1), ((crit.y_coord) * height) / Params.world_height,
-                                        ((crit.x_coord) * width) / Params.world_width, ((((crit.y_coord + 1) * height) / Params.world_height)-2),
-                                        ((((crit.x_coord + 1) * width) / Params.world_width)-2), ((((crit.y_coord + 1) * height) / Params.world_height)-2));
+                                        ((((crit.x_coord + 0.5) * width) / Params.world_width) - 1), ((crit.y_coord) * height) / Params.world_height,
+                                        ((crit.x_coord) * width) / Params.world_width, ((((crit.y_coord + 1) * height) / Params.world_height) - 2),
+                                        ((((crit.x_coord + 1) * width) / Params.world_width) - 2), ((((crit.y_coord + 1) * height) / Params.world_height) - 2));
                                 pn.getChildren().add(tri);
                                 break;
                             case STAR:
                                 Polygon Star = new Polygon();
-                                double x_zero = ((crit.x_coord) * width) / Params.world_width;
-                                double x_zero_two = ((((crit.x_coord + 0.2) * width) / Params.world_width)-0.4);
-                                double x_zero_three = ((((crit.x_coord + 0.3) * width) / Params.world_width)-0.6);
-                                double x_zero_five = ((((crit.x_coord + 0.5) * width) / Params.world_width)-1);
-                                double x_zero_seven = ((((crit.x_coord + 0.7) * width) / Params.world_width)-1.4);
-                                double x_zero_eight = ((((crit.x_coord + 0.8) * width) / Params.world_width)-1.6);
-                                double x_zero_one = ((((crit.x_coord + 1) * width) / Params.world_width)-2);
-                                double y_zero = ((crit.y_coord) * height) / Params.world_height;
-                                double y_zero_two = ((((crit.y_coord + 0.2) * height) / Params.world_height)-0.4);
-                                double y_zero_three = ((((crit.y_coord + 0.3) * height) / Params.world_height)-0.6);
-                                double y_zero_five = ((((crit.y_coord + 0.5) * height) / Params.world_height)-1);
-                                double y_zero_seven = ((((crit.y_coord + 0.7) * height) / Params.world_height)-1.4);
-                                double y_zero_eight = ((((crit.y_coord + 0.8) * height) / Params.world_height)-1.6);
-                                double y_zero_one = ((((crit.y_coord + 1) * height) / Params.world_height)-2);
-                                Star.getPoints().addAll(x_zero, y_zero_eight,
-                                        x_zero_two, y_zero_eight,
-                                        x_zero_one, y_zero_three,
-                                        x_zero_five, y_zero_seven,
-                                        x_zero_seven, y_zero_one,
-                                        x_zero, y_zero_five,
-                                        x_zero_seven, y_zero_one,
-                                        x_zero_five, y_zero_two,
-                                        x_zero, y_zero_three,
-                                        x_zero_three, y_zero_three);
+                                Star.getPoints().addAll(
+                                        ((width * (crit.x_coord + 0.00 + 0.5) / Params.world_width) - 0.0 - 1.0), ((height * (crit.y_coord - 0.50 + 0.5) / Params.world_height) + 1.0 - 1.0),
+                                        ((width * (crit.x_coord + 0.10 + 0.5) / Params.world_width) - 0.2 - 1.0), ((height * (crit.y_coord - 0.10 + 0.5) / Params.world_height) + 0.2 - 1.0),
+                                        ((width * (crit.x_coord + 0.50 + 0.5) / Params.world_width) - 1.0 - 1.0), ((height * (crit.y_coord - 0.10 + 0.5) / Params.world_height) + 0.2 - 1.0),
+                                        ((width * (crit.x_coord + 0.25 + 0.5) / Params.world_width) - 0.5 - 1.0), ((height * (crit.y_coord + 0.10 + 0.5) / Params.world_height) - 0.2 - 1.0),
+                                        ((width * (crit.x_coord + 0.35 + 0.5) / Params.world_width) - 0.7 - 1.0), ((height * (crit.y_coord + 0.50 + 0.5) / Params.world_height) - 1.0 - 1.0),
+                                        ((width * (crit.x_coord + 0.00 + 0.5) / Params.world_width) + 0.0 - 1.0), ((height * (crit.y_coord + 0.25 + 0.5) / Params.world_height) - 0.5 - 1.0),
+                                        ((width * (crit.x_coord - 0.35 + 0.5) / Params.world_width) + 0.7 - 1.0), ((height * (crit.y_coord + 0.50 + 0.5) / Params.world_height) - 1.0 - 1.0),
+                                        ((width * (crit.x_coord - 0.25 + 0.5) / Params.world_width) + 0.5 - 1.0), ((height * (crit.y_coord + 0.10 + 0.5) / Params.world_height) - 0.2 - 1.0),
+                                        ((width * (crit.x_coord - 0.50 + 0.5) / Params.world_width) + 1.0 - 1.0), ((height * (crit.y_coord - 0.10 + 0.5) / Params.world_height) + 0.2 - 1.0),
+                                        ((width * (crit.x_coord - 0.10 + 0.5) / Params.world_width) + 0.2 - 1.0), ((height * (crit.y_coord - 0.10 + 0.5) / Params.world_height) + 0.2 - 1.0)
+                                );
                                 Star.setFill(crit.viewColor());
                                 Star.setStroke(crit.viewOutlineColor());
                                 pn.getChildren().add(Star);
