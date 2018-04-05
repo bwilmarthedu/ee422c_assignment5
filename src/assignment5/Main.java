@@ -24,7 +24,12 @@ import javafx.animation.Timeline;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.Console;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 import static assignment5.Critter.getInstances;
 
@@ -47,6 +52,12 @@ public class Main extends Application implements EventHandler {
     ArrayList<Critter> crits;
     static AnchorPane critterWorld = new AnchorPane();
     TextArea stats = new TextArea();
+    private static String myPackage;	// package of Critter file.  Critter cannot be in default pkg.
+
+    // Gets the package name.  The usage assumes that Critter and its subclasses are all in the same package.
+    static {
+        myPackage = Critter.class.getPackage().toString().split(" ")[1];
+    }
 
     public static void main(String[] args) throws InvalidCritterException {
         for (int k = 0; k < 1; k++) {
@@ -84,6 +95,7 @@ public class Main extends Application implements EventHandler {
         } catch (InvalidCritterException e) {
             e.printStackTrace();
         }
+        //stats.redirectOut(null, System.out);
         stats.setDisable(true);
         stats.setMaxHeight(100);
         stats.setMinHeight(100);
@@ -133,6 +145,21 @@ public class Main extends Application implements EventHandler {
         Button b = new Button("Stats");
         fp.getChildren().addAll(t, critterOptions, b);
         statsTab.setContent(fp);
+        b.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    String s;
+                    Class<Critter> c = (Class<Critter>) Class.forName(myPackage + "." + critterOptions.getValue());
+                    Method method = c.getMethod("runStats", List.class);
+                    s = (String) method.invoke(c, Critter.getInstances((String) critterOptions.getValue()));
+                    stats.appendText(s);
+                }
+                catch (Exception e){
+                    critterOptions.setPromptText("invalid input");
+                }
+            }
+        });
         return statsTab;
     }
 
@@ -219,7 +246,7 @@ public class Main extends Application implements EventHandler {
         //
         Timeline timeline = new Timeline();
         timeline.setCycleCount(Animation.INDEFINITE);
-        KeyFrame timeStep = new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+        KeyFrame timeStep = new KeyFrame(Duration.seconds(0.1), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 for (int i = 0; i < InputValues.animateTimeStep; i++) {
