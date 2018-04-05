@@ -22,6 +22,15 @@ public abstract class Critter {
         STAR
     }
 
+    private int x_coord;
+    private int y_coord;
+
+    private int energy = 0;
+
+    protected int getEnergy() {
+        return energy;
+    }
+
     /* the default color is white, which I hope makes critters invisible by default
      * If you change the background color of your View component, then update the default
      * color to be the same as you background
@@ -48,8 +57,8 @@ public abstract class Critter {
     public abstract CritterShape viewShape();
 
     private static String myPackage;
-    public static List<Critter> population = new java.util.ArrayList<Critter>();
-    private static List<Critter> babies = new java.util.ArrayList<Critter>();
+    //public static List<Critter> population = new java.util.ArrayList<Critter>();
+    //private static List<Critter> babies = new java.util.ArrayList<Critter>();
 
     // Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
     static {
@@ -59,10 +68,72 @@ public abstract class Critter {
     protected final String look(int direction, boolean steps) {
         String s = null;
         this.energy -= Params.look_energy_cost;
-        //todo
-        //if occupied
-        //return occupying Critter . toString
-        //if unoccupied
+        int distance;
+        int x = 0;
+        int y = 0;
+        if(steps == false){ distance = 1; }
+        else{ distance = 2; };
+        switch (direction) {
+            case 0:
+                x = (x_coord + distance) % Params.world_width;
+                break;
+            case 1:
+                x = (x_coord + distance) % Params.world_width;
+                if (y_coord - distance < 0) {
+                    y = y_coord - distance + Params.world_height;
+                } else {
+                    y -= distance;
+                }
+                break;
+            case 2:
+                if (y_coord - distance < 0) {
+                    y = y_coord - distance + Params.world_height;
+                } else {
+                    y -= distance;
+                }
+                break;
+            case 3:
+                if (x_coord - distance < 0) {
+                    x = x_coord - distance + Params.world_width;
+                } else {
+                    x -= distance;
+                }
+                if (y_coord - distance < 0) {
+                    y = y_coord - distance + Params.world_height;
+                } else {
+                    y -= distance;
+                }
+                break;
+            case 4:
+                if (x_coord - distance < 0) {
+                    x = x_coord - distance + Params.world_width;
+                } else {
+                    x -= distance;
+                }
+                break;
+            case 5:
+                if (x_coord - distance < 0) {
+                    x = x_coord - distance + Params.world_width;
+                } else {
+                    x -= distance;
+                }
+                y = (y_coord + distance) % Params.world_height;
+                break;
+            case 6:
+                y = (y_coord + distance) % Params.world_height;
+                break;
+            case 7:
+                x = (x_coord + distance) % Params.world_width;
+                y = (y_coord + distance) % Params.world_height;
+                break;
+        }
+
+        if(CritterWorld.oldWorld[x][y] != null && CritterWorld.fightMode == 0){
+            return CritterWorld.oldWorld[x][y].toString();
+        }
+        else if(CritterWorld.critterWorld[x][y] != null && CritterWorld.fightMode == 1){
+            return CritterWorld.critterWorld[x][y].toString();
+        }
         return null;
         //todo later: handle look during doTimeStep vs. look during run
     }
@@ -83,14 +154,7 @@ public abstract class Critter {
         return "";
     }
 
-    private int energy = 0;
 
-    protected int getEnergy() {
-        return energy;
-    }
-
-    private int x_coord;
-    private int y_coord;
     //todo -- Track critter movement
 
     /**
@@ -184,7 +248,7 @@ public abstract class Critter {
      */
     protected final void reproduce(Critter offspring, int direction) {
         if (this.energy > Params.min_reproduce_energy) {
-            babies.add(offspring);
+            CritterWorld.babies.add(offspring);
             offspring.energy = (int) Math.floor(0.5 * this.energy);
             this.energy = (int) Math.ceil(0.5 * this.energy);
             switch (direction) {
@@ -254,14 +318,17 @@ public abstract class Critter {
     public static void worldTimeStep() {
         // 1. Increment Timestep
         // 2. doTimeSteps();
-        for (Critter c : population) {
+        CritterWorld.fightMode = 0;
+        CritterWorld.oldWorld = placeCritters();
+        for (Critter c : CritterWorld.population) {
             c.doTimeStep();
         }
         // 3. doEncounters();
+        CritterWorld.fightMode = 1;
         doEncounters();
         removeDead();
         // 4. updateRestEnergy();
-        for (Critter c : population) {
+        for (Critter c : CritterWorld.population) {
             c.energy -= Params.rest_energy_cost;
         }
         removeDead();
@@ -273,8 +340,8 @@ public abstract class Critter {
             }
         }
         // 7. moveBabies();
-        population.addAll(babies);
-        babies.clear();
+        CritterWorld.population.addAll(CritterWorld.babies);
+        CritterWorld.babies.clear();
     }
 
     public static void displayWorld(Object pane) {
@@ -293,7 +360,7 @@ public abstract class Critter {
             width = unit * Params.world_width;
         }
         if (width != 0) {
-            Critter[][] newWorld = placeCritters(width, height);
+            Critter[][] newWorld = placeCritters(); // Todo critterworld
             for (int i = 0; i < Params.world_height; i++) {
                 for (int j = 0; j < Params.world_width; j++) {
                     Critter crit = newWorld[j][i];
@@ -303,8 +370,8 @@ public abstract class Critter {
                                 Circle circ = new Circle();
                                 circ.setFill(crit.viewColor());
                                 circ.setStroke(crit.viewOutlineColor());
-                                circ.setStrokeWidth(0);
-                                circ.setRadius(floor(unit / 2));
+                                circ.setStrokeWidth(1);
+                                circ.setRadius(floor((unit / 2)-1));
                                 circ.setCenterX(((crit.x_coord + 0.5) * width) / Params.world_width);
                                 circ.setCenterY(((crit.y_coord + 0.5) * height) / Params.world_height);
                                 pn.getChildren().add(circ);
@@ -322,8 +389,9 @@ public abstract class Critter {
                                 break;
                             case DIAMOND:
                                 Polygon dia = new Polygon();
-                                dia.setFill(crit.viewOutlineColor());
-                                dia.setStrokeWidth(0);
+                                dia.setFill(crit.viewColor());
+                                dia.setStroke(crit.viewOutlineColor());
+                                dia.setStrokeWidth(1);
                                 dia.getPoints().addAll(
                                         ((((crit.x_coord + 0.5) * width) / Params.world_width)-1), ((crit.y_coord) * height) / Params.world_height,
                                         ((crit.x_coord) * width) / Params.world_width, ((((crit.y_coord + 0.5) * height) / Params.world_height)-1),
@@ -334,7 +402,7 @@ public abstract class Critter {
                             case TRIANGLE:
                                 Polygon tri = new Polygon();
                                 tri.setFill(crit.viewOutlineColor());
-                                tri.setStrokeWidth(0);
+                                tri.setStrokeWidth(1);
                                 tri.getPoints().addAll(
                                         ((((crit.x_coord + 0.5) * width) / Params.world_width)-1), ((crit.y_coord) * height) / Params.world_height,
                                         ((crit.x_coord) * width) / Params.world_width, ((((crit.y_coord + 1) * height) / Params.world_height)-2),
@@ -379,14 +447,14 @@ public abstract class Critter {
         }
     }
 
-    private static Critter[][] placeCritters(double w, double h) {
+    private static Critter[][] placeCritters() {
         Critter[][] critterWorld = new Critter[(int) Params.world_width][(int) Params.world_height];
         for (int x = 0; x < (int) Params.world_width; x++) {
             for (int y = 0; y < (int) Params.world_height; y++) {
                 critterWorld[x][y] = null;
             }
         }
-        for (Critter c : population) {
+        for (Critter c : CritterWorld.population) {
             critterWorld[(int) c.x_coord][(int) c.y_coord] = c; // todo made a change here
         }
         return critterWorld;
@@ -416,7 +484,7 @@ public abstract class Critter {
         try {
             Class c = Class.forName(myPackage + "." + critter_class_name);
             Critter cr = (Critter) c.newInstance();
-            population.add(cr);
+            CritterWorld.population.add(cr);
             cr.x_coord = getRandomInt(Params.world_width);
             cr.y_coord = getRandomInt(Params.world_height);
             cr.energy = Params.start_energy;
@@ -436,8 +504,8 @@ public abstract class Critter {
         List<Critter> result = new java.util.ArrayList<Critter>();
         try {
             Class c = Class.forName(myPackage + "." + critter_class_name);
-            for (int i = 0; i < population.size(); i++) {
-                Critter tempCritter = population.get(i);
+            for (int i = 0; i < CritterWorld.population.size(); i++) {
+                Critter tempCritter = CritterWorld.population.get(i);
                 if (c.equals(tempCritter.getClass())) {
                     result.add(tempCritter);
                 }
@@ -514,7 +582,7 @@ public abstract class Critter {
          * implemented for grading tests to work.
          */
         protected static List<Critter> getPopulation() {
-            return population;
+            return CritterWorld.population;
         }
 
         /*
@@ -524,7 +592,7 @@ public abstract class Critter {
          * at either the beginning OR the end of every timestep.
          */
         protected static List<Critter> getBabies() {
-            return babies;
+            return CritterWorld.babies;
         }
     }
 
@@ -558,7 +626,7 @@ public abstract class Critter {
             world[Params.world_height + 1][j] = '-';
         }
         // Populate with critters
-        for (Critter c : population) {
+        for (Critter c : CritterWorld.population) {
             world[c.y_coord + 1][c.x_coord + 1] = c.toString().charAt(0);
         }
         // Print world
@@ -574,7 +642,7 @@ public abstract class Critter {
         List<Critter> crittersOnSquare = new ArrayList<Critter>();
         for (int i = 0; i < Params.world_height; i++) {
             for (int j = 0; j < Params.world_width; j++) {
-                for (Critter c : population) {
+                for (Critter c : CritterWorld.population) {
                     if (c.x_coord == j && c.y_coord == i && c.energy > 0) {
                         crittersOnSquare.add(c);
                     }
@@ -629,10 +697,10 @@ public abstract class Critter {
      * This method removes all Critters from the world that have less than or equal to 0 energy.
      */
     private static void removeDead() {
-        for (int i = 0; i < population.size(); i++) {
-            Critter c = population.get(i);
+        for (int i = 0; i < CritterWorld.population.size(); i++) {
+            Critter c = CritterWorld.population.get(i);
             if (c.energy <= 0) {
-                population.remove(c);
+                CritterWorld.population.remove(c);
             }
         }
     }
