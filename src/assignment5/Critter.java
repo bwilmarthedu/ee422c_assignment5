@@ -668,12 +668,12 @@ public abstract class Critter {
         int aroll, broll;
         afight = a.fight(b.toString());
         bfight = b.fight(a.toString());
-        if (afight) {
+        if (afight && a.energy>0) {
             aroll = getRandomInt(a.energy);
         } else {
             aroll = 0;
         }
-        if (bfight) {
+        if (bfight && b.energy>0) {
             broll = getRandomInt(b.energy);
         } else {
             broll = 0;
