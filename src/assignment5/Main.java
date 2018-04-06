@@ -140,14 +140,27 @@ public class Main extends Application implements EventHandler {
         fp.setPadding(new Insets(10));
         fp.setVgap(25);
         Button b = new Button("Quit");
-        fp.getChildren().addAll(b);
+        Button b2 = new Button("Restart");
+        fp.getChildren().addAll(b, b2);
         quitTab.setContent(fp);
+        //        fp.getChildren().addAll(b);
+        //        quitTab.setContent(fp);
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 try {
                     Stage stage = (Stage) b.getScene().getWindow();
                     stage.close();
+                } catch (Exception e) {
+                }
+            }
+        });
+        b2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Critter.clearWorld();
+                    Critter.displayWorld(critterWorld);
                 } catch (Exception e) {
                 }
             }
