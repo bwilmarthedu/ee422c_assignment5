@@ -61,4 +61,16 @@ public class Critter4 extends Critter {
     public String toString() {
         return "4";
     }
+
+    /**
+     * Overriding run stats output. This is what I'd imagine a rock would say
+     *
+     * @param critter1s all the critter1s
+     * @return the string
+     */
+    public static String runStats(java.util.List<Critter> critter1s) {
+        StringBuilder s = new StringBuilder();
+        s.append("(...)");
+        return s.toString();
+    }
 }

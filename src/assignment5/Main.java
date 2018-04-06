@@ -197,6 +197,7 @@ public class Main extends Application implements EventHandler {
                     Method method = c.getMethod("runStats", List.class);
                     s = (String) method.invoke(c, Critter.getInstances((String) critterOptions.getValue()));
                     stats.appendText(s);
+                    stats.appendText("\n");
                 } catch (Exception e) {
                     critterOptions.setPromptText("invalid input");
                 }

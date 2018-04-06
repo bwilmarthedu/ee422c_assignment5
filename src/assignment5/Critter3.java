@@ -1,6 +1,6 @@
 package assignment5;
 
- /* CRITTERS Main.java
+/* CRITTERS Main.java
  * EE422C Project 4 submission by
  * Replace <...> with your actual data.
  * <Kassandra Smith>
@@ -19,25 +19,31 @@ import java.util.Objects;
 
 /**
  * One of four required Critters. Named Critter3 in accordance with instructions
- * Critter3 hates Craig. It also has a child in empty spaces
+ * Only walks in one of two directions
  */
 public class Critter3 extends Critter {
     int dir = 0;
     int babyCount = 0;
 
-    public Critter3(){
+    public Critter3() {
         dir = Critter.getRandomInt(8);
     }
 
-    public boolean fight(String not_used) { return true; }
+    public boolean fight(String not_used) {
+        if (this.look(dir, false) != null) {
+            walk(dir);
+            return false;
+        }
+        return true;
+    }
 
     @Override
     public void doTimeStep() {
-        walk(dir %2);
-    if(getEnergy() > 100){
-        Critter3 child = new Critter3();
-        reproduce(child, Critter.getRandomInt(8));
-    }
+        walk(dir % 2);
+        if (getEnergy() > 100) {
+            Critter3 child = new Critter3();
+            reproduce(child, Critter.getRandomInt(8));
+        }
     }
 
 
@@ -56,6 +62,19 @@ public class Critter3 extends Critter {
      */
     public String toString() {
         return "3";
+    }
+
+
+    /**
+     * Overriding run stats output
+     *
+     * @param critter1s all the critter1s
+     * @return the string
+     */
+    public static String runStats(java.util.List<Critter> critter1s) {
+        StringBuilder s = new StringBuilder();
+        s.append("Why can't I turn!?");
+        return s.toString();
     }
 }
 
