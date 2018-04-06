@@ -53,7 +53,7 @@ public class Main extends Application implements EventHandler {
     ArrayList<Critter> crits;
     static AnchorPane critterWorld = new AnchorPane();
     TextArea stats = new TextArea();
-    private static String myPackage;	// package of Critter file.  Critter cannot be in default pkg.
+    private static String myPackage;    // package of Critter file.  Critter cannot be in default pkg.
 
     // Gets the package name.  The usage assumes that Critter and its subclasses are all in the same package.
     static {
@@ -72,37 +72,28 @@ public class Main extends Application implements EventHandler {
     @Override
     public void start(Stage stage) {
         crits = getCritters();
-
         BorderPane border = new BorderPane();
-
         TabPane tabPane = new TabPane();
         tabPane.setMinWidth(300);
         tabPane.setMinHeight(400);
-
         double height = stage.getHeight();
         double width = stage.getWidth();
-
         stage.minWidthProperty().setValue(800);
         stage.minHeightProperty().setValue(450);
-
         stage.setTitle("Critters Part Two");
-
         Group root = new Group();
         Scene scene = new Scene(root, width, height);
-
         scene.getStylesheets().add("assignment5/gui.css");
-
         tabPane = setTabs(tabPane);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-//        try {
-//            stats.setText(Critter.runStats(getInstances("Algae")));
-//        } catch (InvalidCritterException e) {
-//            e.printStackTrace();
-//        }
+        //        try {
+        //            stats.setText(Critter.runStats(getInstances("Algae")));
+        //        } catch (InvalidCritterException e) {
+        //            e.printStackTrace();
+        //        }
         stats.setDisable(true);
         stats.setMaxHeight(100);
         stats.setMinHeight(100);
-
         border.setRight(tabPane);
         border.setCenter(critterWorld);
         border.setBottom(stats);
@@ -110,14 +101,10 @@ public class Main extends Application implements EventHandler {
         // bind to take available space
         border.prefHeightProperty().bind(scene.heightProperty());
         border.prefWidthProperty().bind(scene.widthProperty());
-
         Critter.displayWorld(critterWorld);
-
         root.getChildren().add(border);
-
         stage.setScene(scene);
         stage.sizeToScene();
-
         stage.show();
     }
 
@@ -140,7 +127,7 @@ public class Main extends Application implements EventHandler {
         return tabPane;
     }
 
-    private Tab buildQuitTab (Tab quitTab){
+    private Tab buildQuitTab(Tab quitTab) {
         FlowPane fp = new FlowPane(Orientation.VERTICAL);
         fp.setPrefWrapLength(150);
         fp.setPadding(new Insets(10));
@@ -153,11 +140,8 @@ public class Main extends Application implements EventHandler {
             public void handle(ActionEvent event) {
                 try {
                     Stage stage = (Stage) b.getScene().getWindow();
-                    // do what you have to do
                     stage.close();
-
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                 }
             }
         });
@@ -187,8 +171,7 @@ public class Main extends Application implements EventHandler {
                     Method method = c.getMethod("runStats", List.class);
                     s = (String) method.invoke(c, Critter.getInstances((String) critterOptions.getValue()));
                     stats.appendText(s);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     critterOptions.setPromptText("invalid input");
                 }
             }
