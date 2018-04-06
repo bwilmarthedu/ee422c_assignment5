@@ -69,8 +69,8 @@ public abstract class Critter {
         String s = null;
         this.energy -= Params.look_energy_cost;
         int distance;
-        int x = 0;
-        int y = 0;
+        int x = this.x_coord;
+        int y = this.y_coord;
         if(steps == false){ distance = 1; }
         else{ distance = 2; };
         switch (direction) {

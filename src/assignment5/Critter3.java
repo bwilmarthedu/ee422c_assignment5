@@ -1,4 +1,4 @@
-package assignment4;
+package assignment5;
 
  /* CRITTERS Main.java
  * EE422C Project 4 submission by
@@ -13,58 +13,49 @@ package assignment4;
  * Spring 2018
  */
 
-import assignment5.Critter;
+import javafx.scene.paint.Color;
+
+import java.util.Objects;
 
 /**
- * One of two required Critters. Named Critter1 in accordance with instructions
- * <p>
- * Critter1 is a vegetarian: She by default fights Algae. She also only walks/runs (randomly chosen) in the cardinal directions.
+ * One of four required Critters. Named Critter3 in accordance with instructions
+ * Critter3 hates Craig. It also has a child in empty spaces
  */
 public class Critter3 extends Critter {
     int dir = 0;
+    int babyCount = 0;
 
-    /**
-     * Constructor
-     */
-    public Critter3() {
-        dir = Critter.getRandomInt(10) % 2;
+    public Critter3(){
+        dir = Critter.getRandomInt(8);
     }
 
-    /**
-     * Runs/walks as its time step: runs if in a cardinal direction, walks if not.
-     */
+    public boolean fight(String not_used) { return true; }
+
     @Override
     public void doTimeStep() {
-        if (dir == 0) {
-            run(dir);
-        } else {
-            walk(dir);
-        }
+        walk(dir %2);
+    if(getEnergy() > 100){
+        Critter3 child = new Critter3();
+        reproduce(child, Critter.getRandomInt(8));
     }
-    /**
-     * Decides to fight if it's with Algae
-     * @param opponent the other Critter in the space
-     * @return whether or not we fight
-     */
-    @Override
-    public boolean fight(String opponent) {
-        if (opponent.equals("@")) {
-            return true; //always fight
-        } else {
-            return false;
-        }
     }
+
 
     @Override
     public CritterShape viewShape() {
-        return null;
+        return CritterShape.DIAMOND;
+    }
+
+    @Override
+    public javafx.scene.paint.Color viewColor() {
+        return Color.CORAL;
     }
 
     /**
      * @return representation of the critter
      */
     public String toString() {
-        return "1";
+        return "3";
     }
 }
 
