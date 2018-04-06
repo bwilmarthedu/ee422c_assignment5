@@ -13,6 +13,7 @@ package assignment5;
  */
 
 import assignment5.Critter;
+import javafx.scene.paint.Color;
 
 /**
  * One of two required Critters. Named Critter2 in accordance with project instructions
@@ -54,7 +55,11 @@ public class Critter4 extends Critter {
 
     @Override
     public CritterShape viewShape() {
-        return null;
+        return Critter.CritterShape.STAR;
+    }
+
+    public javafx.scene.paint.Color viewOutlineColor() {
+        return Color.DARKORANGE;
     }
 
     /**
