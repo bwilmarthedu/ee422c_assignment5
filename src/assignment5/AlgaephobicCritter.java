@@ -1,6 +1,5 @@
 package assignment5;
 
-//import project5.Critter.CritterShape;
 
 public class AlgaephobicCritter extends Critter {
 
@@ -11,7 +10,7 @@ public class AlgaephobicCritter extends Critter {
 		Params.look_energy_cost = 0;
 		Params.walk_energy_cost = 0;
 		Params.run_energy_cost = 0;
-		Params.refresh_algae_count = 0;
+			Params.refresh_algae_count = 0;
 	}
 
 	public boolean fight(String not_used) { return false; }

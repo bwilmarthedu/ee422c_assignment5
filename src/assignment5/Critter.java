@@ -24,7 +24,6 @@ public abstract class Critter {
 
     private int x_coord;
     private int y_coord;
-
     private int energy = 0;
 
     protected int getEnergy() {
@@ -65,14 +64,25 @@ public abstract class Critter {
         myPackage = Critter.class.getPackage().toString().split(" ")[1];
     }
 
+    /**
+     * The look function sees whether or not there is a critter in the requested direction
+     *
+     * @param direction the direction to check
+     * @param steps     the number of steps (1, 2) to check
+     * @return the String of the critter in that direction (if there is one)
+     */
     protected final String look(int direction, boolean steps) {
         String s = null;
         this.energy -= Params.look_energy_cost;
         int distance;
         int x = this.x_coord;
         int y = this.y_coord;
-        if(steps == false){ distance = 1; }
-        else{ distance = 2; };
+        if (steps == false) {
+            distance = 1;
+        } else {
+            distance = 2;
+        }
+        ;
         switch (direction) {
             case 0:
                 x = (x_coord + distance) % Params.world_width;
@@ -127,11 +137,9 @@ public abstract class Critter {
                 y = (y_coord + distance) % Params.world_height;
                 break;
         }
-
-        if(CritterWorld.oldWorld[x][y] != null && CritterWorld.fightMode == 0){
+        if (CritterWorld.oldWorld[x][y] != null && CritterWorld.fightMode == 0) {
             return CritterWorld.oldWorld[x][y].toString();
-        }
-        else if(CritterWorld.critterWorld[x][y] != null && CritterWorld.fightMode == 1){
+        } else if (CritterWorld.critterWorld[x][y] != null && CritterWorld.fightMode == 1) {
             return CritterWorld.critterWorld[x][y].toString();
         }
         return null;
@@ -153,9 +161,6 @@ public abstract class Critter {
     public String toString() {
         return "";
     }
-
-
-    //todo -- Track critter movement
 
     /**
      * Moves one space in a given direction and deducts Params.walk_energy_cost from the Critter.
@@ -310,7 +315,7 @@ public abstract class Critter {
 
     public abstract void doTimeStep();
 
-    public abstract boolean fight(String oponent);
+    public abstract boolean fight(String opponent);
 
     /**
      * This method simulates one time step of the world.
@@ -344,6 +349,11 @@ public abstract class Critter {
         CritterWorld.babies.clear();
     }
 
+    /**
+     * Adds the critters to a pane for display
+     *
+     * @param pane the pane to alter
+     */
     public static void displayWorld(Object pane) {
         AnchorPane pn = (AnchorPane) pane;
         double width = pn.getWidth();
@@ -359,7 +369,7 @@ public abstract class Critter {
             width = unit * Params.world_width;
         }
         if (width != 0) {
-            Critter[][] newWorld = placeCritters(); // Todo critterworld
+            Critter[][] newWorld = placeCritters();
             for (int i = 0; i < Params.world_height; i++) {
                 for (int j = 0; j < Params.world_width; j++) {
                     Critter crit = newWorld[j][i];
@@ -370,7 +380,7 @@ public abstract class Critter {
                                 circ.setFill(crit.viewColor());
                                 circ.setStroke(crit.viewOutlineColor());
                                 circ.setStrokeWidth(1);
-                                circ.setRadius(floor((unit / 2)-1));
+                                circ.setRadius(floor((unit / 2) - 1));
                                 circ.setCenterX(((crit.x_coord + 0.5) * width) / Params.world_width);
                                 circ.setCenterY(((crit.y_coord + 0.5) * height) / Params.world_height);
                                 pn.getChildren().add(circ);
@@ -400,7 +410,8 @@ public abstract class Critter {
                                 break;
                             case TRIANGLE:
                                 Polygon tri = new Polygon();
-                                tri.setFill(crit.viewOutlineColor());
+                                tri.setStroke(crit.viewOutlineColor());
+                                tri.setFill(crit.viewFillColor());
                                 tri.setStrokeWidth(1);
                                 tri.getPoints().addAll(
                                         ((((crit.x_coord + 0.5) * width) / Params.world_width) - 1), ((crit.y_coord) * height) / Params.world_height,
@@ -427,7 +438,6 @@ public abstract class Critter {
                                 pn.getChildren().add(Star);
                                 break;
                         }
-                        //                pn.getChildren().add(newWorld[j][i]);
                     }
                 }
             }
@@ -510,27 +520,25 @@ public abstract class Critter {
      */
     //todo "For this assignment, runStats returns a String, and is not a void method."
     public static String runStats(List<Critter> critters) {
-        return "";
+        StringBuilder stats = new StringBuilder();
+        stats.append(critters.size() + " critters as follows: ");
+        java.util.Map<String, Integer> critter_count = new java.util.HashMap<String, Integer>();
+        for (Critter crit : critters) {
+            String crit_string = crit.toString();
+            Integer old_count = critter_count.get(crit_string);
+            if (old_count == null) {
+                critter_count.put(crit_string, 1);
+            } else {
+                critter_count.put(crit_string, old_count.intValue() + 1);
+            }
+        }
+        String prefix = "";
+        for (String s : critter_count.keySet()) {
+            stats.append(prefix + s + ":" + critter_count.get(s));
+            prefix = ", ";
+        }
+        return stats.toString();
     }
-    //    public static void runStats(List<Critter> critters) {
-    //        System.out.print("" + critters.size() + " critters as follows -- ");
-    //        java.util.Map<String, Integer> critter_count = new java.util.HashMap<String, Integer>();
-    //        for (Critter crit : critters) {
-    //            String crit_string = crit.toString();
-    //            Integer old_count = critter_count.get(crit_string);
-    //            if (old_count == null) {
-    //                critter_count.put(crit_string, 1);
-    //            } else {
-    //                critter_count.put(crit_string, old_count.intValue() + 1);
-    //            }
-    //        }
-    //        String prefix = "";
-    //        for (String s : critter_count.keySet()) {
-    //            System.out.print(prefix + s + ":" + critter_count.get(s));
-    //            prefix = ", ";
-    //        }
-    //        System.out.println();
-    //    }
 
     /* the TestCritter class allows some critters to "cheat". If you want to
      * create tests of your Critter model, you can create subclasses of this class
@@ -587,10 +595,11 @@ public abstract class Critter {
      * Clear the world of all critters, dead and alive
      */
     public static void clearWorld() {
+        CritterWorld.population.clear();
+        CritterWorld.babies.clear();
     }
 
     /*HELPER FUNCTIONS*/
-
     /**
      * This method displays a rudimentary model of the world in System.out.
      */

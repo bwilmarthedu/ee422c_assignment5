@@ -17,21 +17,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 
 import java.io.File;
-import java.io.Console;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import static assignment5.Critter.getInstances;
 
 
 /*
@@ -60,15 +54,22 @@ public class Main extends Application implements EventHandler {
         myPackage = Critter.class.getPackage().toString().split(" ")[1];
     }
 
+    /**
+     * The main function
+     *
+     * @param args required input
+     * @throws InvalidCritterException for any exception
+     */
     public static void main(String[] args) throws InvalidCritterException {
-        for (int k = 0; k < 1; k++) {
-            //Critter.makeCritter("Algae");
-            //Critter.makeCritter("Craig");
-        }
         launch(args);
 
     }
 
+    /**
+     * Sets up the gui
+     *
+     * @param stage the stage to be built on
+     */
     @Override
     public void start(Stage stage) {
         crits = getCritters();
@@ -86,19 +87,13 @@ public class Main extends Application implements EventHandler {
         scene.getStylesheets().add("assignment5/gui.css");
         tabPane = setTabs(tabPane);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        //        try {
-        //            stats.setText(Critter.runStats(getInstances("Algae")));
-        //        } catch (InvalidCritterException e) {
-        //            e.printStackTrace();
-        //        }
         stats.setDisable(true);
         stats.setMaxHeight(100);
         stats.setMinHeight(100);
         border.setRight(tabPane);
         border.setCenter(critterWorld);
+        critterWorld.setMaxWidth(1600);
         border.setBottom(stats);
-        //
-        // bind to take available space
         border.prefHeightProperty().bind(scene.heightProperty());
         border.prefWidthProperty().bind(scene.widthProperty());
         Critter.displayWorld(critterWorld);
@@ -108,6 +103,12 @@ public class Main extends Application implements EventHandler {
         stage.show();
     }
 
+    /**
+     * Make the tabs for the gui
+     *
+     * @param tabPane the tabPane we add our panes to
+     * @return a nice, populated tabPane
+     */
     private TabPane setTabs(TabPane tabPane) {
         makeTab.setText("Make");
         runTab.setText("Run");
@@ -127,6 +128,12 @@ public class Main extends Application implements EventHandler {
         return tabPane;
     }
 
+    /**
+     * builds the tab that quits
+     *
+     * @param quitTab the reference to the tab we build
+     * @return a built tab
+     */
     private Tab buildQuitTab(Tab quitTab) {
         FlowPane fp = new FlowPane(Orientation.VERTICAL);
         fp.setPrefWrapLength(150);
@@ -149,6 +156,12 @@ public class Main extends Application implements EventHandler {
 
     }
 
+    /**
+     * builds the tab that shows stats
+     *
+     * @param statsTab the reference to the tab we build
+     * @return a built tab
+     */
     private Tab buildStatsTab(Tab statsTab) {
         FlowPane fp = new FlowPane(Orientation.VERTICAL);
         fp.setPrefWrapLength(150);
@@ -179,6 +192,12 @@ public class Main extends Application implements EventHandler {
         return statsTab;
     }
 
+    /**
+     * builds the tab that makes Critters
+     *
+     * @param makeTab the reference to the tab we build
+     * @return a built tab
+     */
     private Tab buildMakeTab(Tab makeTab) {
         FlowPane fp = new FlowPane(Orientation.VERTICAL);
         fp.setPrefWrapLength(150);
@@ -206,6 +225,7 @@ public class Main extends Application implements EventHandler {
                     }
                     critterWorld.getChildren().clear();
                     Critter.displayWorld(critterWorld);
+                    //                    System.out.println("Debug:" + critterWorld.getWidth());
                 } catch (Exception e) {
                     numOf.setPromptText("invalid input");
                 }
@@ -215,6 +235,12 @@ public class Main extends Application implements EventHandler {
         return makeTab;
     }
 
+    /**
+     * builds the tab that runs
+     *
+     * @param runTab the reference to the tab we build
+     * @return a built tab
+     */
     private Tab buildRunTab(Tab runTab) {
         FlowPane fp = new FlowPane(Orientation.VERTICAL);
         fp.setPrefWrapLength(150);
@@ -245,6 +271,12 @@ public class Main extends Application implements EventHandler {
         return runTab;
     }
 
+    /**
+     * builds the tab that runs animation
+     *
+     * @param animateTab the reference to the tab we build
+     * @return a built tab
+     */
     private Tab buildAnimateTab(Tab animateTab) {
         FlowPane fp = new FlowPane(Orientation.VERTICAL);
         fp.setPrefWrapLength(150);
@@ -306,6 +338,12 @@ public class Main extends Application implements EventHandler {
         return animateTab;
     }
 
+    /**
+     * builds the tab that seeds
+     *
+     * @param seedTab the reference to the tab we build
+     * @return a built tab
+     */
     private Tab buildSeedTab(Tab seedTab) {
         FlowPane fp = new FlowPane(Orientation.VERTICAL);
         fp.setPrefWrapLength(150);
@@ -332,25 +370,11 @@ public class Main extends Application implements EventHandler {
         return seedTab;
     }
 
-    public VBox addVbox() {
-        VBox vert = new VBox();
-        vert.setPadding(new Insets(10));
-        vert.setSpacing(8);
-        Text title = new Text("Options");
-        vert.getChildren().add(title);
-        Hyperlink options[] = new Hyperlink[]{
-                new Hyperlink("Make"),
-                new Hyperlink("Run"),
-                new Hyperlink("Animate"),
-                new Hyperlink("Set Seed")
-        };
-        for (int i = 0; i < 4; i++) {
-            vert.setMargin(options[i], new Insets(0, 0, 0, 8));
-            vert.getChildren().add(options[i]);
-        }
-        return vert;
-    }
-
+    /**
+     * Gets the types of Critters in the folder
+     *
+     * @return the Critter types
+     */
     public ArrayList<Critter> getCritters() {
         ArrayList critterTypes = new ArrayList<String>();
         ArrayList notCritters = new ArrayList();
@@ -369,8 +393,7 @@ public class Main extends Application implements EventHandler {
                     notCritters.add(critterTypes.get(i));
                 }
             } catch (Exception e) {
-                System.out.println("debug");
-
+                //                System.out.println("debug");
             }
         }
         notCritters.add("Critter");
@@ -379,8 +402,12 @@ public class Main extends Application implements EventHandler {
         return critterTypes;
     }
 
+    /**
+     * Required handler: Events are handled in their tabs
+     *
+     * @param event
+     */
     @Override
     public void handle(Event event) {
-        //todo handlers
     }
 }
