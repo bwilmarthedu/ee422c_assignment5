@@ -49,10 +49,11 @@ public class Main extends Application implements EventHandler {
     Tab animateTab = new Tab();
     Tab seedTab = new Tab();
     Tab statsTab = new Tab();
+    Tab quitTab = new Tab();
     ArrayList<Critter> crits;
     static AnchorPane critterWorld = new AnchorPane();
     TextArea stats = new TextArea();
-    private static String myPackage;	// package of Critter file.  Critter cannot be in default pkg.
+    private static String myPackage;    // package of Critter file.  Critter cannot be in default pkg.
 
     // Gets the package name.  The usage assumes that Critter and its subclasses are all in the same package.
     static {
@@ -70,13 +71,11 @@ public class Main extends Application implements EventHandler {
 
     @Override
     public void start(Stage stage) {
-        //todo get critter types
         crits = getCritters();
         BorderPane border = new BorderPane();
         TabPane tabPane = new TabPane();
         tabPane.setMinWidth(300);
         tabPane.setMinHeight(400);
-        Border debug = new Border(new BorderStroke(Color.color(0.32, 0.68, 0.65), BorderStrokeStyle.DASHED, CornerRadii.EMPTY, BorderWidths.EMPTY));
         double height = stage.getHeight();
         double width = stage.getWidth();
         stage.minWidthProperty().setValue(800);
@@ -86,21 +85,15 @@ public class Main extends Application implements EventHandler {
         Scene scene = new Scene(root, width, height);
         scene.getStylesheets().add("assignment5/gui.css");
         tabPane = setTabs(tabPane);
-        //debug
-        tabPane.setBorder(debug);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        //
-        //        stats.setText("DEBUG");
-        try {
-            stats.setText(Critter.runStats(getInstances("Algae")));
-        } catch (InvalidCritterException e) {
-            e.printStackTrace();
-        }
-        //stats.redirectOut(null, System.out);
+        //        try {
+        //            stats.setText(Critter.runStats(getInstances("Algae")));
+        //        } catch (InvalidCritterException e) {
+        //            e.printStackTrace();
+        //        }
         stats.setDisable(true);
         stats.setMaxHeight(100);
         stats.setMinHeight(100);
-        //
         border.setRight(tabPane);
         border.setCenter(critterWorld);
         border.setBottom(stats);
@@ -108,7 +101,6 @@ public class Main extends Application implements EventHandler {
         // bind to take available space
         border.prefHeightProperty().bind(scene.heightProperty());
         border.prefWidthProperty().bind(scene.widthProperty());
-        critterWorld.setBorder(debug);
         Critter.displayWorld(critterWorld);
         root.getChildren().add(border);
         stage.setScene(scene);
@@ -122,6 +114,7 @@ public class Main extends Application implements EventHandler {
         animateTab.setText("Animate");
         seedTab.setText("Seed");
         statsTab.setText("Stats");
+        quitTab.setText("Quit");
         HBox hbox = new HBox();
         hbox.setAlignment(Pos.CENTER);
         makeTab.setContent(hbox);
@@ -130,7 +123,30 @@ public class Main extends Application implements EventHandler {
         tabPane.getTabs().add(buildRunTab(runTab));
         tabPane.getTabs().add(buildSeedTab(seedTab));
         tabPane.getTabs().add(buildStatsTab(statsTab));
+        tabPane.getTabs().add(buildQuitTab(quitTab));
         return tabPane;
+    }
+
+    private Tab buildQuitTab(Tab quitTab) {
+        FlowPane fp = new FlowPane(Orientation.VERTICAL);
+        fp.setPrefWrapLength(150);
+        fp.setPadding(new Insets(10));
+        fp.setVgap(25);
+        Button b = new Button("Quit");
+        fp.getChildren().addAll(b);
+        quitTab.setContent(fp);
+        b.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Stage stage = (Stage) b.getScene().getWindow();
+                    stage.close();
+                } catch (Exception e) {
+                }
+            }
+        });
+        return quitTab;
+
     }
 
     private Tab buildStatsTab(Tab statsTab) {
@@ -155,8 +171,7 @@ public class Main extends Application implements EventHandler {
                     Method method = c.getMethod("runStats", List.class);
                     s = (String) method.invoke(c, Critter.getInstances((String) critterOptions.getValue()));
                     stats.appendText(s);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     critterOptions.setPromptText("invalid input");
                 }
             }

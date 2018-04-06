@@ -11,22 +11,22 @@ package assignment5;
  * Slip days used: <0>
  * Spring 2018
  */
-
-import assignment5.Critter;
 import javafx.scene.paint.Color;
 
 /**
- * One of two required Critters. Named Critter2 in accordance with project instructions
- * Critter2 is a "pacifist" ... she'll fight at random. She also has an "always forward" mentality and only moves in one direction.
+ * One of four required Critters. Named Critter4 in accordance with project instructions
+ * Critter4 is a "pacifist" ... she'll fight at random. She also has an "always forward" mentality and only moves in one direction.
  */
 public class Critter4 extends Critter {
     int fight = 0;
+    int babyCount = 0;
 
     /**
      * Constructor
      */
     public Critter4() {
-        fight = (Critter.getRandomInt(10) % 2);
+        //        Params.min_reproduce_energy = 0;
+        //        Params.refresh_algae_count = 0;
     }
 
     /**
@@ -34,38 +34,46 @@ public class Critter4 extends Critter {
      */
     @Override
     public void doTimeStep() {
-        walk(0);
-        Critter4 baby = new Critter4();
-        reproduce(baby, 0);
+        for (int dir = 8; dir > 0; dir--) {
+            if (this.look(dir, false) == null && babyCount < 3 && this.getEnergy() > 150) {
+                Critter4 baby = new Critter4();
+                reproduce(baby, dir);
+                babyCount++;
+            }
+        }
+
     }
 
     /**
-     * Randomly determines to fight
+     * Hates Craig
      *
      * @param opponent the other Critter in the space
      * @return
      */
     @Override
     public boolean fight(String opponent) {
-        if (fight == 0) {
-            return true;
+        if (opponent.equals("C")) {
+            return true; //always fight Craig
+        } else {
+            return false;
         }
-        return false;
     }
 
     @Override
     public CritterShape viewShape() {
-        return Critter.CritterShape.STAR;
+
+        return CritterShape.TRIANGLE;
     }
 
+    @Override
     public javafx.scene.paint.Color viewOutlineColor() {
-        return Color.DARKORANGE;
+        return Color.DARKSEAGREEN;
     }
 
     /**
      * @return representation of the critter
      */
     public String toString() {
-        return "2";
+        return "4";
     }
 }
